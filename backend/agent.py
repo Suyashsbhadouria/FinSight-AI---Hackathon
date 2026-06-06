@@ -6,6 +6,7 @@ from langgraph.graph import StateGraph, START, END
 from backend.slm_client import SLMClient
 from backend.rag import LightweightVectorStore
 from backend import tools
+from backend.pipeline_logger import get_pipeline_logger
 
 # 1. State Definition
 class AgentState(TypedDict):
@@ -32,6 +33,18 @@ class LangGraphAgent:
         self.slm_client = slm_client
         self.vector_store = vector_store
         self.graph = self._compile_graph()
+        self._run_id: str = ""
+
+    def _log_augmentation(self, stage: str, description: str, input_text: str = "", output_text: str = "", **extra):
+        get_pipeline_logger().log_augmentation(
+            pipeline="assistant",
+            stage=stage,
+            description=description,
+            input_text=input_text,
+            output_text=output_text,
+            run_id=self._run_id,
+            extra=extra or None,
+        )
 
     def _compile_graph(self) -> Any:
         # Create StateGraph
@@ -109,12 +122,23 @@ class LangGraphAgent:
         
         prompt += f"\nThis is reasoning cycle #{step_count}. Decide your next action. Respond in JSON."
 
+        self._log_augmentation(
+            "think_prompt",
+            "Assembled THINK node prompt with query, history, and retrieved context",
+            input_text=f"query={query}, history_len={len(history)}, context_len={len(prev_contexts)}",
+            output_text=prompt,
+            extra={"step_count": step_count},
+        )
+
         # Query LLM
         response_text = self.slm_client.generate(
             prompt=prompt,
             system_prompt=system_prompt,
             temperature=0.1,
-            response_format_json=True
+            response_format_json=True,
+            pipeline="assistant",
+            stage=f"think_step_{step_count}",
+            run_id=self._run_id,
         )
 
         # Parse output
@@ -178,16 +202,44 @@ class LangGraphAgent:
         output = ""
         
         if tool_name == "rag_retrieve":
-            output = tools.rag_retrieve_tool(self.vector_store, tool_arg)
+            output = tools.rag_retrieve_tool(
+                self.vector_store, tool_arg, pipeline="assistant", run_id=self._run_id
+            )
         elif tool_name == "web_search":
             output = tools.web_search_tool(tool_arg)
+            get_pipeline_logger().log_retrieval(
+                pipeline="assistant",
+                stage="web_search",
+                query=tool_arg,
+                results=[{"text": output[:2000], "section": "web", "page": None, "score": 1.0}],
+                search_type="web",
+                run_id=self._run_id,
+            )
         elif tool_name == "web_scrape":
             output = tools.web_scrape_tool(tool_arg)
+            get_pipeline_logger().log_retrieval(
+                pipeline="assistant",
+                stage="web_scrape",
+                query=tool_arg,
+                results=[{"text": output[:2000], "section": "web", "page": None, "score": 1.0}],
+                search_type="web_scrape",
+                run_id=self._run_id,
+            )
         else:
             output = "Action Error: Invalid tool selected."
 
         log_entry = {"step": "ACTION", "text": f"Executed tool: '{tool_name}' ({tool_arg}). Result obtained."}
         logs = state.get("reasoning_logs", []) + [log_entry]
+
+        get_pipeline_logger().log_augmentation(
+            pipeline="assistant",
+            stage="tool_execution",
+            description=f"Tool '{tool_name}' returned output for observe step",
+            input_text=tool_arg,
+            output_text=output,
+            run_id=self._run_id,
+            extra={"tool_name": tool_name},
+        )
         
         return {
             "tool_output": output,
@@ -224,7 +276,10 @@ class LangGraphAgent:
             prompt=prompt,
             system_prompt=system_prompt,
             temperature=0.1,
-            response_format_json=True
+            response_format_json=True,
+            pipeline="assistant",
+            stage="observe",
+            run_id=self._run_id,
         )
 
         observation = "Observation: Retrieved data."
@@ -246,6 +301,14 @@ class LangGraphAgent:
         prev_contexts = state.get("retrieved_contexts", [])
         new_context_entry = f"[{tool_name} output]: {tool_output}"
         updated_contexts = prev_contexts + [new_context_entry]
+
+        self._log_augmentation(
+            "context_merge",
+            "Merged tool output into retrieved context pool for next reasoning cycle",
+            input_text=tool_output,
+            output_text=new_context_entry,
+            extra={"context_count": len(updated_contexts), "sufficient": sufficient},
+        )
 
         # Extract potential citations from output (e.g. matching "Page X, Section Y" or URLs)
         citations = state.get("citations", [])
@@ -294,11 +357,22 @@ class LangGraphAgent:
         )
 
         prompt = f"User Query: {query}\n\nRetrieved context and tools output:\n{contexts}\n\nCompile your final response."
+
+        self._log_augmentation(
+            "output_prompt",
+            "Assembled OUTPUT node prompt with all retrieved contexts",
+            input_text=contexts,
+            output_text=prompt,
+            extra={"citation_count": len(citations)},
+        )
         
         final_answer = self.slm_client.generate(
             prompt=prompt,
             system_prompt=system_prompt,
-            temperature=0.2
+            temperature=0.2,
+            pipeline="assistant",
+            stage="final_output",
+            run_id=self._run_id,
         )
 
         # Append citations to response if not explicitly structured by LLM
@@ -315,11 +389,13 @@ class LangGraphAgent:
 
     # --- External Execution Interface ---
 
-    def run(self, query: str, history: List[Dict[str, str]] = None) -> Dict[str, Any]:
+    def run(self, query: str, history: List[Dict[str, str]] = None, run_id: str = None) -> Dict[str, Any]:
         """
         Runs the agent workflow starting with the query.
         Returns response, citations, and complete THINK-ACTION-OBSERVE logs.
         """
+        self._run_id = run_id or get_pipeline_logger().new_run_id()
+
         initial_state: AgentState = {
             "query": query,
             "history": history or [],
@@ -341,5 +417,6 @@ class LangGraphAgent:
         return {
             "response": final_state["final_response"],
             "citations": final_state["citations"],
-            "logs": final_state["reasoning_logs"]
+            "logs": final_state["reasoning_logs"],
+            "run_id": self._run_id,
         }

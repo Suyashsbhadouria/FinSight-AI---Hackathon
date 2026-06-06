@@ -2,6 +2,7 @@ import json
 import requests
 from typing import Optional, Dict, Any, List
 from backend import config
+from backend.pipeline_logger import get_pipeline_logger
 
 class SLMClient:
     """
@@ -24,11 +25,26 @@ class SLMClient:
         system_prompt: Optional[str] = None,
         temperature: float = 0.1,
         max_tokens: int = 2048,
-        response_format_json: bool = False
+        response_format_json: bool = False,
+        pipeline: str = "unknown",
+        stage: str = "generation",
+        run_id: Optional[str] = None,
     ) -> str:
         """
         Generates completion for a prompt, automatically handling Nvidia NIM-to-Hugging Face fallback.
         """
+        logger = get_pipeline_logger()
+        logger.log_generation(
+            pipeline=pipeline,
+            stage=stage,
+            system_prompt=system_prompt,
+            prompt=prompt,
+            temperature=temperature,
+            max_tokens=max_tokens,
+            response_format_json=response_format_json,
+            run_id=run_id,
+        )
+
         # 1. Attempt Nvidia NIM (if API key is available)
         if self.nvidia_api_key:
             try:
@@ -59,6 +75,13 @@ class SLMClient:
                     data = response.json()
                     content = data["choices"][0]["message"]["content"]
                     print("[SLMClient] Generation succeeded via NVIDIA NIM.")
+                    logger.log_llm_response(
+                        pipeline=pipeline,
+                        stage=stage,
+                        response=content,
+                        provider="nvidia_nim",
+                        run_id=run_id,
+                    )
                     return content
                 else:
                     print(f"[SLMClient] NVIDIA NIM request failed with code {response.status_code}: {response.text}")
@@ -108,6 +131,13 @@ class SLMClient:
                     else:
                         content = str(data)
                     print("[SLMClient] Generation succeeded via Hugging Face.")
+                    logger.log_llm_response(
+                        pipeline=pipeline,
+                        stage=stage,
+                        response=content,
+                        provider="huggingface",
+                        run_id=run_id,
+                    )
                     return content
                 else:
                     print(f"[SLMClient] Hugging Face failed with code {response.status_code}: {response.text}")
@@ -118,7 +148,15 @@ class SLMClient:
 
         # 3. Last fallback: Mock response for testing when API keys are absent
         print("[SLMClient] CRITICAL: Both primary and fallback providers failed or are unconfigured. Returning mock placeholder data.")
-        return self._get_mock_response(prompt, response_format_json)
+        mock = self._get_mock_response(prompt, response_format_json)
+        logger.log_llm_response(
+            pipeline=pipeline,
+            stage=stage,
+            response=mock,
+            provider="mock_fallback",
+            run_id=run_id,
+        )
+        return mock
 
     def _get_mock_response(self, prompt: str, json_format: bool) -> str:
         """Helper to return high-quality mock data when keys are not configured, aiding offline development."""

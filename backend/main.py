@@ -14,6 +14,7 @@ from backend.agent import LangGraphAgent
 from backend.guardrails import validate_input, validate_output
 from backend.tools import competitor_analysis_tool
 from backend.map_reduce import run_map_reduce_analysis
+from backend.pipeline_logger import PipelineLogger, set_pipeline_logger
 
 app = FastAPI(
     title="FinSight AI API",
@@ -37,6 +38,8 @@ class AppState:
         self.current_doc: Optional[Dict[str, Any]] = None
         self.extracted_risks: List[Dict[str, Any]] = []
         self.guard_logs: List[Dict[str, Any]] = []
+        self.pipeline_logger = PipelineLogger()
+        set_pipeline_logger(self.pipeline_logger)
 
 state = AppState()
 
@@ -262,20 +265,31 @@ async def chat_with_agent(req: ChatRequest):
     # 1. Input Guard Layer
     input_audit = validate_input(req.query)
     log_guard_action("INPUT", req.query, input_audit)
-    
+    run_id = state.pipeline_logger.new_run_id()
+
     if not input_audit["passed"]:
         return {
             "response": f"Security Alert: {input_audit['reason']}. {input_audit['details']}",
             "citations": [],
             "logs": [{"step": "GUARDRAIL", "text": f"Blocked input: {input_audit['reason']}"}],
-            "safety_audit": {"input_passed": False, "output_passed": True, "input_log": input_audit, "output_log": None}
+            "safety_audit": {"input_passed": False, "output_passed": True, "input_log": input_audit, "output_log": None},
+            "run_id": run_id,
         }
 
     sanitized_query = input_audit["sanitized_query"]
+    if sanitized_query != req.query:
+        state.pipeline_logger.log_augmentation(
+            pipeline="assistant",
+            stage="input_guardrail",
+            description="Input sanitized by guardrails before agent run",
+            input_text=req.query,
+            output_text=sanitized_query,
+            run_id=run_id,
+        )
 
     # 2. Run LangGraph Agent workflow
     try:
-        agent_result = state.agent.run(sanitized_query, req.history)
+        agent_result = state.agent.run(sanitized_query, req.history, run_id=run_id)
         raw_response = agent_result["response"]
     except Exception as e:
         print(f"[API] Error running LangGraph agent: {e}")
@@ -286,6 +300,15 @@ async def chat_with_agent(req: ChatRequest):
     log_guard_action("OUTPUT", raw_response, output_audit)
 
     final_response = output_audit["sanitized_response"]
+    if final_response != raw_response:
+        state.pipeline_logger.log_augmentation(
+            pipeline="assistant",
+            stage="output_guardrail",
+            description="Output sanitized by guardrails before client response",
+            input_text=raw_response,
+            output_text=final_response,
+            run_id=run_id,
+        )
 
     return {
         "response": final_response,
@@ -296,7 +319,8 @@ async def chat_with_agent(req: ChatRequest):
             "output_passed": output_audit["passed"],
             "input_log": input_audit,
             "output_log": output_audit
-        }
+        },
+        "run_id": run_id,
     }
 
 @app.post("/api/competitors")
@@ -321,35 +345,30 @@ async def map_reduce_analyze(req: MapReduceRequest):
         raise HTTPException(status_code=400, detail="Please upload a financial filing document before initiating analysis.")
 
     try:
-        # Validate query through input guardrail
         input_audit = validate_input(req.query)
         log_guard_action("INPUT_MR", req.query, input_audit)
-        # #region agent log
-        try:
-            import json as _json, time as _time
-            with open("debug-1f95b2.log", "a", encoding="utf-8") as _f:
-                _f.write(_json.dumps({
-                    "sessionId": "1f95b2",
-                    "location": "main.py:map_reduce_analyze",
-                    "message": "guardrail input check",
-                    "data": {"passed": input_audit["passed"], "mode": req.mode, "section": req.section_name},
-                    "timestamp": int(_time.time() * 1000),
-                    "hypothesisId": "H2",
-                }) + "\n")
-        except OSError:
-            pass
-        # #endregion
-        
+        run_id = state.pipeline_logger.new_run_id()
+
         if not input_audit["passed"]:
             return {
                 "success": False,
                 "error": f"Security Check Failed: {input_audit['reason']}",
                 "report": f"### Security Check Failed\n\nThe query was blocked by our guardrails.\n\n**Reason:** {input_audit['reason']}\n\n**Details:** {input_audit.get('details', '')}",
                 "pages_analyzed": [],
-                "intermediate_summaries": []
+                "intermediate_summaries": [],
+                "run_id": run_id,
             }
 
         sanitized_query = input_audit["sanitized_query"]
+        if sanitized_query != req.query:
+            state.pipeline_logger.log_augmentation(
+                pipeline="map_reduce",
+                stage="input_guardrail",
+                description="Input sanitized by guardrails before map-reduce run",
+                input_text=req.query,
+                output_text=sanitized_query,
+                run_id=run_id,
+            )
 
         params = {
             "start_page": req.start_page,
@@ -358,20 +377,28 @@ async def map_reduce_analyze(req: MapReduceRequest):
             "limit": req.limit
         }
 
-        # Run pipeline
         result = run_map_reduce_analysis(
             doc=state.current_doc,
             query=sanitized_query,
             mode=req.mode,
             mode_params=params,
             slm_client=state.slm_client,
-            vector_store=state.vector_store
+            vector_store=state.vector_store,
+            run_id=run_id,
         )
-        
-        # Run output guardrail on the final synthesized report if successful
+
         if result.get("success") and "report" in result:
             output_audit = validate_output(result["report"])
             log_guard_action("OUTPUT_MR", result["report"], output_audit)
+            if output_audit["sanitized_response"] != result["report"]:
+                state.pipeline_logger.log_augmentation(
+                    pipeline="map_reduce",
+                    stage="output_guardrail",
+                    description="Report sanitized by guardrails before client response",
+                    input_text=result["report"],
+                    output_text=output_audit["sanitized_response"],
+                    run_id=run_id,
+                )
             result["report"] = output_audit["sanitized_response"]
 
         return result
@@ -407,6 +434,29 @@ async def get_guardrail_stats():
         "pii_redacted": len(pii_masked),
         "toxicity_blocks": len(toxicity_blocked),
         "checks_passed": len(logs) - len(blocked),
+    }
+
+@app.get("/api/pipeline/logs")
+async def get_pipeline_logs(
+    pipeline: Optional[str] = None,
+    run_id: Optional[str] = None,
+    limit: int = 100,
+    truncate: bool = True,
+):
+    """
+    Returns structured pipeline logs for assistant and map-reduce runs.
+    Full untruncated records are persisted to logs/pipeline.ndjson.
+    """
+    logs = state.pipeline_logger.get_logs(
+        pipeline=pipeline,
+        run_id=run_id,
+        limit=min(limit, 500),
+        truncate=truncate,
+    )
+    return {
+        "logs": logs,
+        "log_file": str(state.pipeline_logger.log_file),
+        "total_in_memory": len(state.pipeline_logger.entries),
     }
 
 if __name__ == "__main__":

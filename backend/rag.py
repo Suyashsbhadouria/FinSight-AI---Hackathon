@@ -2,7 +2,7 @@ import re
 import math
 import numpy as np
 import requests
-from typing import List, Dict, Any, Tuple
+from typing import List, Dict, Any, Tuple, Optional
 from backend import config
 
 class LightweightVectorStore:
@@ -217,7 +217,14 @@ class LightweightVectorStore:
             
         print(f"[RAG] Successfully indexed {len(self.chunks)} chunks.")
 
-    def search(self, query: str, k: int = 5) -> List[Dict[str, Any]]:
+    def search(
+        self,
+        query: str,
+        k: int = 5,
+        pipeline: str = "unknown",
+        stage: str = "semantic_search",
+        run_id: Optional[str] = None,
+    ) -> List[Dict[str, Any]]:
         """
         Finds the k-most similar text chunks using cosine similarity.
         """
@@ -246,10 +253,29 @@ class LightweightVectorStore:
             chunk = self.chunks[idx].copy()
             chunk["score"] = score
             results.append(chunk)
+
+        if pipeline != "unknown":
+            from backend.pipeline_logger import get_pipeline_logger
+            get_pipeline_logger().log_retrieval(
+                pipeline=pipeline,
+                stage=stage,
+                query=query,
+                results=results,
+                search_type="semantic",
+                run_id=run_id,
+                extra={"k": k},
+            )
             
         return results
 
-    def keyword_search(self, query: str, k: int = 5) -> List[Dict[str, Any]]:
+    def keyword_search(
+        self,
+        query: str,
+        k: int = 5,
+        pipeline: str = "unknown",
+        stage: str = "keyword_search",
+        run_id: Optional[str] = None,
+    ) -> List[Dict[str, Any]]:
         """
         Performs basic keyword matching for fallback/search features.
         """
@@ -272,4 +298,18 @@ class LightweightVectorStore:
                 
         # Sort by match score
         matches = sorted(matches, key=lambda x: x["score"], reverse=True)
-        return matches[:k]
+        results = matches[:k]
+
+        if pipeline != "unknown":
+            from backend.pipeline_logger import get_pipeline_logger
+            get_pipeline_logger().log_retrieval(
+                pipeline=pipeline,
+                stage=stage,
+                query=query,
+                results=results,
+                search_type="keyword",
+                run_id=run_id,
+                extra={"k": k},
+            )
+
+        return results

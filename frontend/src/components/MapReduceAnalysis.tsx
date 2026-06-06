@@ -145,21 +145,6 @@ export const MapReduceAnalysis: React.FC<MapReduceAnalysisProps> = ({ activeDoc 
       limit: mode === 'smart_search' ? limit : undefined,
     };
 
-    // #region agent log
-    fetch('http://127.0.0.1:7714/ingest/fb839e37-5d2c-47c9-b423-bed6f4587766', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '1f95b2' },
-      body: JSON.stringify({
-        sessionId: '1f95b2',
-        location: 'MapReduceAnalysis.tsx:runAnalysis',
-        message: 'map-reduce request start',
-        data: { mode, sectionName, queryLen: query.length, sections: activeDoc.sections },
-        timestamp: Date.now(),
-        hypothesisId: 'H3',
-      }),
-    }).catch(() => {});
-    // #endregion
-
     try {
       const response = await fetch('/api/analyze/map-reduce', {
         method: 'POST',
@@ -178,27 +163,6 @@ export const MapReduceAnalysis: React.FC<MapReduceAnalysisProps> = ({ activeDoc 
       if (response.ok) {
         setProgressStep(3);
         const data = await response.json();
-
-        // #region agent log
-        fetch('http://127.0.0.1:7714/ingest/fb839e37-5d2c-47c9-b423-bed6f4587766', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '1f95b2' },
-          body: JSON.stringify({
-            sessionId: '1f95b2',
-            location: 'MapReduceAnalysis.tsx:runAnalysis',
-            message: 'map-reduce response',
-            data: {
-              success: data.success,
-              error: data.error,
-              pages: data.pages_analyzed?.length ?? 0,
-              summaries: data.intermediate_summaries?.length ?? 0,
-              reportLen: data.report?.length ?? 0,
-            },
-            timestamp: Date.now(),
-            hypothesisId: 'H2',
-          }),
-        }).catch(() => {});
-        // #endregion
 
         setTimeout(() => {
           if (data.success) {

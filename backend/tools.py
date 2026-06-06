@@ -1,6 +1,6 @@
 import json
 import re
-from typing import Any
+from typing import Any, Optional
 
 import requests
 from bs4 import BeautifulSoup
@@ -13,14 +13,24 @@ except ImportError:
 from backend.rag import LightweightVectorStore
 
 
-def rag_retrieve_tool(vector_store: LightweightVectorStore, query: str, k: int = 4) -> str:
+def rag_retrieve_tool(
+    vector_store: LightweightVectorStore,
+    query: str,
+    k: int = 4,
+    pipeline: str = "assistant",
+    run_id: Optional[str] = None,
+) -> str:
     """
     Search tool to retrieve relevant sections and context chunks from the uploaded financial document.
     """
     print(f"[Tools] Executing RAG retrieval for query: '{query}'...")
-    results = vector_store.search(query, k=k)
+    results = vector_store.search(
+        query, k=k, pipeline=pipeline, stage="rag_retrieve", run_id=run_id
+    )
     if not results:
-        results = vector_store.keyword_search(query, k=k)
+        results = vector_store.keyword_search(
+            query, k=k, pipeline=pipeline, stage="rag_retrieve_fallback", run_id=run_id
+        )
 
     if not results:
         return "RAG Retrieval Result: No matching content found in the filing document."
