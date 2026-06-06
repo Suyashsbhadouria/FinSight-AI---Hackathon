@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>FinSight AI - Intelligent Financial Filing Analysis Platform</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Outfit:wght@100..900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
     <script id="tailwind-config">
         tailwind.config = {
@@ -14,125 +14,246 @@
             theme: {
                 extend: {
                     "colors": {
-                        "surface-container-highest": "#353534",
-                        "critical": "#EF4444",
-                        "on-surface": "#e5e2e1",
-                        "surface": "#131313",
-                        "surface-graphite": "#1E1E1E",
-                        "background-deep": "#0A0A0A",
-                        "inverse-primary": "#005ac2",
-                        "primary-fixed-dim": "#adc6ff",
-                        "on-primary-container": "#00285d",
-                        "surface-tint": "#adc6ff",
-                        "surface-container-high": "#2a2a2a",
-                        "primary": "#adc6ff",
-                        "inverse-on-surface": "#313030",
-                        "surface-container": "#201f1f",
-                        "secondary-fixed": "#e9ddff",
-                        "error-container": "#93000a",
-                        "on-primary-fixed": "#001a42",
-                        "surface-container-lowest": "#0e0e0e",
-                        "primary-fixed": "#d8e2ff",
-                        "on-primary": "#002e6a",
-                        "outline": "#8c909f",
-                        "outline-variant": "#424754",
-                        "on-error": "#690005",
-                        "on-surface-variant": "#c2c6d6",
-                        "secondary": "#d0bcff",
-                        "tertiary": "#ffb786",
-                        "on-secondary": "#3c0091",
-                        "on-background": "#e5e2e1",
-                        "on-tertiary-container": "#461f00",
-                        "tertiary-fixed": "#ffdcc6",
-                        "text-muted": "#A1A1AA",
-                        "on-tertiary-fixed": "#311400",
-                        "secondary-container": "#571bc1",
-                        "error": "#ffb4ab",
-                        "surface-variant": "#353534",
-                        "surface-container-low": "#1c1b1b",
-                        "positive": "#10B981",
-                        "on-primary-fixed-variant": "#004395",
-                        "secondary-fixed-dim": "#d0bcff",
-                        "surface-bright": "#393939",
-                        "background": "#131313",
-                        "on-tertiary-fixed-variant": "#723600",
-                        "on-secondary-fixed": "#23005c",
-                        "warning": "#F59E0B",
-                        "surface-dim": "#131313",
-                        "on-secondary-fixed-variant": "#5516be",
-                        "on-secondary-container": "#c4abff",
-                        "tertiary-container": "#df7412",
-                        "on-error-container": "#ffdad6",
-                        "inverse-surface": "#e5e2e1",
-                        "primary-container": "#4d8eff",
-                        "tertiary-fixed-dim": "#ffb786",
-                        "on-tertiary": "#502400"
+                        // The primary requested palette and exact components aliases
+                        "primary": "#511845",
+                        "primary-plum": "#511845",
+                        "crimson": "#900C3F",
+                        "brand-crimson": "#900C3F",
+                        "vividred": "#C70039",
+                        "vivid-red": "#C70039",
+                        "burntorange": "#FF5733",
+                        "burnt-orange": "#FF5733",
+                        
+                        "bg-deep": "#0A060A",
+                        "near-black": "#0F0A0D",
+                        "card-bg": "#1A0F14",
+                        "border-divider": "#2D1A22",
+                        "text-light": "#F5EEF0",
+                        "text-dark": "#F5EEF0",
+                        "text-muted": "#9B8A8F",
+                        
+                        // compatibility mappings for existing colors to match the new palette
+                        "surface-container-highest": "#2D1A22",
+                        "critical": "#C70039",
+                        "on-surface": "#F5EEF0",
+                        "surface": "#1A0F14",
+                        "surface-graphite": "#150C10",
+                        "background-deep": "#0A060A",
+                        "primary-fixed-dim": "#FF5733",
+                        "on-primary-container": "#F5EEF0",
+                        "surface-tint": "#900C3F",
+                        "surface-container-high": "#2D1A22",
+                        "inverse-on-surface": "#F5EEF0",
+                        "surface-container": "#1A0F14",
+                        "secondary-fixed": "#FF5733",
+                        "error-container": "#C70039",
+                        "on-primary-fixed": "#F5EEF0",
+                        "surface-container-lowest": "#0D080C",
+                        "primary-fixed": "#900C3F",
+                        "on-primary": "#F5EEF0",
+                        "outline": "#900C3F",
+                        "outline-variant": "rgba(144, 12, 63, 0.25)",
+                        "on-error": "#F5EEF0",
+                        "on-surface-variant": "#9B8A8F",
+                        "secondary": "#900C3F",
+                        "tertiary": "#FF5733",
+                        "on-secondary": "#F5EEF0",
+                        "on-background": "#F5EEF0",
+                        "on-tertiary-container": "#F5EEF0",
+                        "warning": "#FF5733",
+                        "positive": "#511845",
                     },
                     "borderRadius": {
-                        "DEFAULT": "0.125rem",
-                        "lg": "0.25rem",
-                        "xl": "0.5rem",
-                        "full": "0.75rem"
+                        "DEFAULT": "8px",
+                        "lg": "12px",
+                        "xl": "18px",
+                        "full": "9999px"
                     },
                     "spacing": {
+                        "space-1": "4px",
+                        "space-2": "8px",
+                        "space-3": "12px",
+                        "space-4": "16px",
+                        "space-6": "24px",
+                        "space-8": "32px",
+                        "space-12": "48px",
+                        "space-16": "64px",
+                        "radius-sm": "8px",
+                        "radius-md": "12px",
+                        "radius-lg": "18px",
                         "stack-compact": "4px",
                         "grid-margin": "24px",
-                        "gutter": "12px",
+                        "gutter": "16px",
                         "stack-default": "8px",
                         "section-gap": "32px"
                     },
                     "fontFamily": {
-                        "label-caps": ["Inter"],
-                        "body-md": ["Inter"],
-                        "headline-lg": ["Inter"],
-                        "body-sm": ["Inter"],
-                        "headline-md": ["Inter"],
+                        "serif-display": ["DM Serif Display", "Playfair Display", "serif"],
+                        "serif-body": ["Playfair Display", "serif"],
+                        "sans-brand": ["Outfit", "DM Sans", "sans-serif"],
+                        "label-caps": ["Outfit"],
+                        "body-md": ["Outfit"],
+                        "headline-lg": ["DM Serif Display", "Playfair Display"],
+                        "body-sm": ["Outfit"],
+                        "headline-md": ["Playfair Display"],
                         "data-mono": ["JetBrains Mono"]
                     },
                     "fontSize": {
-                        "label-caps": ["10px", {"lineHeight": "12px", "letterSpacing": "0.05em", "fontWeight": "700"}],
-                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
-                        "headline-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
-                        "body-sm": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
-                        "headline-md": ["18px", {"lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
-                        "data-mono": ["12px", {"lineHeight": "16px", "letterSpacing": "-0.01em", "fontWeight": "500"}]
+                        "label-caps": ["11.5px", {"lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "body-md": ["15px", {"lineHeight": "22px", "fontWeight": "400"}],
+                        "headline-lg": ["26px", {"lineHeight": "34px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                        "headline-md": ["19px", {"lineHeight": "26px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "data-mono": ["13px", {"lineHeight": "18px", "letterSpacing": "-0.01em", "fontWeight": "500"}]
                     }
                 },
             },
         }
     </script>
     <style>
-        /* Utility styles from Stitch Design System */
+        /* Base styles */
+        body {
+            background-color: #0A060A;
+            /* Stunning blend of user's colors (#511845, #900C3F, #C70039, #FF5733) on near-black */
+            background-image: 
+                radial-gradient(circle at 10% 10%, rgba(81, 24, 69, 0.45) 0%, transparent 50%),
+                radial-gradient(circle at 90% 15%, rgba(144, 12, 63, 0.35) 0%, transparent 45%),
+                radial-gradient(circle at 50% 50%, rgba(199, 0, 57, 0.18) 0%, transparent 60%),
+                radial-gradient(circle at 80% 85%, rgba(255, 87, 51, 0.12) 0%, transparent 40%),
+                radial-gradient(circle at 20% 80%, rgba(81, 24, 69, 0.25) 0%, transparent 50%);
+            background-attachment: fixed;
+            background-size: cover;
+            color: #F5EEF0;
+            font-family: 'Outfit', 'DM Sans', sans-serif;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Override fonts globally with important to override tailwind defaults reliably */
+        .font-serif-display {
+            font-family: 'DM Serif Display', 'Playfair Display', serif !important;
+        }
+        .font-serif-body {
+            font-family: 'Playfair Display', serif !important;
+        }
+        .font-sans-brand {
+            font-family: 'Outfit', 'DM Sans', sans-serif !important;
+        }
+        .font-data-mono {
+            font-family: 'JetBrains Mono', monospace !important;
+        }
+
+        /* Elegant serif display tags for titles */
+        h1, h2, h3, h4, h5, h6, .heading-serif {
+            font-family: 'DM Serif Display', 'Playfair Display', serif !important;
+            letter-spacing: -0.01em;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Custom premium glass panel */
         .glass-panel {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(26, 15, 20, 0.65) !important;
+            backdrop-filter: blur(20px) !important;
+            -webkit-backdrop-filter: blur(20px) !important;
+            border: 1px solid rgba(144, 12, 63, 0.35) !important;
+            box-shadow: 0 10px 40px 0 rgba(10, 6, 10, 0.45);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .ai-purple-border {
-            border-left: 2px solid #571bc1;
-            box-shadow: -4px 0 15px -5px rgba(87, 27, 193, 0.5);
+        .glass-panel:hover {
+            border-color: rgba(255, 87, 51, 0.5) !important;
+            box-shadow: 0 0 25px rgba(199, 0, 57, 0.3), inset 0 0 12px rgba(144, 12, 63, 0.2);
+            transform: translateY(-2px);
         }
-        .ai-purple-card {
-            background: rgba(87, 27, 193, 0.05);
-            border-left: 2px solid #d0bcff;
-            backdrop-filter: blur(8px);
+
+        /* Premium glass cards specifically for chat responses */
+        .chat-assistant-card {
+            background: rgba(26, 15, 20, 0.75);
+            backdrop-filter: blur(16px);
+            border-left: 4px solid #C70039;
+            border-top: 1px solid rgba(144, 12, 63, 0.35);
+            border-bottom: 1px solid rgba(144, 12, 63, 0.25);
+            border-right: 1px solid rgba(144, 12, 63, 0.25);
+            box-shadow: 0 6px 28px rgba(10, 6, 10, 0.3);
         }
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 4px;
+
+        /* User bubble styling with gradient */
+        .chat-user-bubble {
+            background: linear-gradient(135deg, #511845 0%, #900C3F 100%);
+            border: 1px solid rgba(199, 0, 57, 0.5);
+            box-shadow: 0 6px 20px rgba(144, 12, 63, 0.25);
         }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: transparent;
+
+        /* Custom premium inputs */
+        .input-glow-focus:focus-within {
+            box-shadow: 0 0 16px rgba(199, 0, 57, 0.35);
+            border-color: #C70039 !important;
         }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #2A2A2A;
-            border-radius: 10px;
+
+        /* Custom scrollbars globally replacing white browser scrollbars */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
         }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: #adc6ff;
+        ::-webkit-scrollbar-track {
+            background: #0A060A;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #511845;
+            border-radius: 4px;
+            border: 1px solid #2D1A22;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #900C3F;
+        }
+        
+        /* Firefox fallback */
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: #511845 #0A060A;
+        }
+
+        /* Staggered card mount animation */
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .animate-slide-up {
+            animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        /* Interactive smooth elements */
+        .interactive-element {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .spin-anim {
+            animation: spin 1.5s infinite linear;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Globally override near-black panels with blended glassmorphism */
+        .bg-near-black, 
+        .bg-near-black\/50, 
+        .bg-near-black\/75, 
+        .bg-near-black\/80, 
+        .bg-near-black\/85, 
+        [class*="bg-near-black"] {
+            background-color: rgba(26, 15, 20, 0.6) !important;
+            backdrop-filter: blur(24px) !important;
+            -webkit-backdrop-filter: blur(24px) !important;
         }
     </style>
   </head>
-  <body class="bg-background-deep text-on-surface font-body-md selection:bg-primary-container selection:text-on-primary-container">
+  <body class="bg-background-deep text-on-surface font-body-md selection:bg-vividred/30 selection:text-white relative min-h-screen overflow-x-hidden">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

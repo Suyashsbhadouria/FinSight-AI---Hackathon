@@ -7,6 +7,21 @@ import { GuardrailLogs } from './components/GuardrailLogs';
 import { FilingUpload } from './components/FilingUpload';
 import { MapReduceAnalysis } from './components/MapReduceAnalysis';
 import { Dashboard, EmptyDashboard } from './components/Dashboard';
+import { 
+  LayoutDashboard, 
+  Upload, 
+  Compass, 
+  AlertTriangle, 
+  Layers, 
+  MessageSquare, 
+  TrendingUp, 
+  ShieldAlert, 
+  Settings, 
+  LogOut,
+  Bell,
+  ChevronLeft,
+  ChevronRight
+} from 'lucide-react';
 
 interface DocumentDetails {
   filename: string;
@@ -21,6 +36,7 @@ function App() {
   const [docDetails, setDocDetails] = useState<DocumentDetails | null>(null);
   const [activeSection, setActiveSection] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<TabId>('dashboard');
+  const [sidebarExpanded, setSidebarExpanded] = useState(true);
 
   const checkDocStatus = async () => {
     try {
@@ -55,81 +71,176 @@ function App() {
   const navigate = (tab: TabId) => setActiveTab(tab);
 
   const navClass = (tab: TabId) =>
-    `w-full flex items-center gap-3 px-4 py-2.5 rounded-lg active:scale-95 transition-all text-left ${
+    `w-full flex items-center gap-3 px-3 py-2.5 rounded-lg active:scale-95 transition-all text-left relative group ${
       activeTab === tab
-        ? 'bg-secondary-container text-on-secondary-container font-semibold'
-        : 'text-on-surface-variant hover:bg-surface-container-highest hover:text-on-surface'
+        ? 'text-burnt-orange font-semibold bg-vivid-red/10'
+        : 'text-text-muted hover:bg-primary-plum/20 hover:text-text-light'
     }`;
 
+  const navItems = [
+    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, requiresDoc: false },
+    { id: 'upload', label: 'Ingest Filing', icon: Upload, requiresDoc: false },
+    { id: 'explorer', label: 'Filing Explorer', icon: Compass, requiresDoc: true },
+    { id: 'risks', label: 'Risk Analysis', icon: AlertTriangle, requiresDoc: true },
+    { id: 'map-reduce', label: 'Map-Reduce', icon: Layers, requiresDoc: true },
+    { id: 'assistant', label: 'AI Assistant', icon: MessageSquare, requiresDoc: true },
+    { id: 'competitors', label: 'Competitors', icon: TrendingUp, requiresDoc: true },
+    { id: 'guardrails', label: 'Guardrails', icon: ShieldAlert, requiresDoc: false },
+  ];
+
   return (
-    <div className="flex bg-background-deep text-on-surface font-body-md overflow-hidden h-screen w-screen relative">
-      <aside className="h-screen w-64 fixed left-0 top-0 flex flex-col border-r border-outline-variant bg-surface-container-low p-stack-default z-50">
-        <div className="flex flex-col h-full">
-          <div className="flex items-center gap-3 px-4 py-6 border-b border-outline-variant/30">
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-              <span className="material-symbols-outlined text-on-primary text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>psychology</span>
-            </div>
-            <div>
-              <h1 className="font-headline-md text-headline-md font-bold text-primary">FinSight AI</h1>
-              <p className="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest text-[9px] opacity-70">Enterprise Intelligence</p>
-            </div>
+    <div className="flex bg-transparent text-text-light font-body-md overflow-hidden h-screen w-screen relative">
+      {/* Sidebar */}
+      <aside 
+        className={`h-screen fixed left-0 top-0 flex flex-col border-r border-border-divider bg-near-black z-50 transition-all duration-300 ${
+          sidebarExpanded ? 'w-[240px]' : 'w-[68px]'
+        }`}
+      >
+        {/* Left gradient accent bar */}
+        <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-gradient-to-b from-primary-plum via-brand-crimson via-vivid-red to-burnt-orange"></div>
+        
+        <div className="flex flex-col h-full pl-[3px]">
+          {/* Logo / Brand area */}
+          <div className="flex items-center justify-between px-4 py-6 border-b border-border-divider">
+            {sidebarExpanded ? (
+              <div className="flex items-center gap-2">
+                <span className="font-serif-display text-xl font-bold tracking-tight text-text-light">
+                  FinSight<span className="text-burnt-orange">.</span>
+                </span>
+                <span className="px-1.5 py-0.5 text-[8px] bg-brand-crimson/30 text-burnt-orange rounded uppercase tracking-widest font-sans-brand font-bold">AI</span>
+              </div>
+            ) : (
+              <div className="font-serif-display text-xl font-bold text-text-light mx-auto">
+                F<span className="text-burnt-orange">.</span>
+              </div>
+            )}
+            
+            {sidebarExpanded && (
+              <button 
+                onClick={() => setSidebarExpanded(false)}
+                className="p-1 hover:bg-primary-plum/30 rounded text-text-muted hover:text-text-light transition-colors"
+              >
+                <ChevronLeft size={16} />
+              </button>
+            )}
           </div>
 
+          {!sidebarExpanded && (
+            <div className="flex justify-center py-2">
+              <button 
+                onClick={() => setSidebarExpanded(true)}
+                className="p-1.5 hover:bg-primary-plum/30 rounded text-text-muted hover:text-text-light transition-colors"
+              >
+                <ChevronRight size={18} />
+              </button>
+            </div>
+          )}
+
+          {/* Navigation Links */}
           <nav className="flex-1 space-y-1 mt-4 px-2 overflow-y-auto custom-scrollbar">
-            <button onClick={() => navigate('dashboard')} className={navClass('dashboard')}>
-              <span className="material-symbols-outlined">dashboard</span>
-              <span className="font-body-md">Dashboard</span>
-            </button>
-            <button onClick={() => navigate('upload')} className={navClass('upload')}>
-              <span className="material-symbols-outlined">upload_file</span>
-              <span className="font-body-md">Ingest Filing</span>
-            </button>
-            <button onClick={() => docDetails && navigate('explorer')} className={navClass('explorer')}>
-              <span className="material-symbols-outlined">search_insights</span>
-              <span className="font-body-md">Filing Explorer</span>
-            </button>
-            <button onClick={() => docDetails && navigate('risks')} className={navClass('risks')}>
-              <span className="material-symbols-outlined">warning</span>
-              <span className="font-body-md">Risk Analysis</span>
-            </button>
-            <button onClick={() => docDetails && navigate('map-reduce')} className={navClass('map-reduce')}>
-              <span className="material-symbols-outlined">layers</span>
-              <span className="font-body-md">Map-Reduce Analyzer</span>
-            </button>
-            <button onClick={() => docDetails && navigate('assistant')} className={navClass('assistant')}>
-              <span className="material-symbols-outlined">psychology</span>
-              <span className="font-body-md">AI Assistant</span>
-            </button>
-            <button onClick={() => docDetails && navigate('competitors')} className={navClass('competitors')}>
-              <span className="material-symbols-outlined">analytics</span>
-              <span className="font-body-md">Competitor Analysis</span>
-            </button>
-            <div className="pt-4 pb-2 px-3"><div className="h-px bg-outline-variant w-full"></div></div>
-            <button onClick={() => navigate('guardrails')} className={navClass('guardrails')}>
-              <span className="material-symbols-outlined">security</span>
-              <span className="font-body-md">Guardrails</span>
-            </button>
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const disabled = item.requiresDoc && !docDetails;
+              if (disabled) return null;
+              
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => navigate(item.id as TabId)}
+                  className={navClass(item.id as TabId)}
+                  title={!sidebarExpanded ? item.label : undefined}
+                >
+                  {/* Active background pill indicator */}
+                  {activeTab === item.id && (
+                    <div className="absolute left-0 top-1.5 bottom-1.5 w-1 rounded-r bg-vivid-red"></div>
+                  )}
+                  
+                  <div className="flex items-center justify-center">
+                    <Icon size={18} className={activeTab === item.id ? 'text-burnt-orange' : 'text-text-muted'} />
+                  </div>
+                  
+                  {sidebarExpanded && (
+                    <span className="font-sans-brand text-sm transition-opacity duration-200">
+                      {item.label}
+                    </span>
+                  )}
+                  
+                  {/* Collapsed Tooltip */}
+                  {!sidebarExpanded && (
+                    <div className="absolute left-16 scale-0 group-hover:scale-100 transition-all duration-150 origin-left bg-near-black border border-primary-plum text-text-light text-xs rounded py-1 px-2.5 z-[99] shadow-lg pointer-events-none whitespace-nowrap">
+                      {item.label}
+                    </div>
+                  )}
+                </button>
+              );
+            })}
           </nav>
+
+          {/* Bottom section (User Avatar, settings and logout) */}
+          <div className="p-4 border-t border-border-divider flex flex-col gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-brand-crimson to-burnt-orange p-[2px] shrink-0">
+                <div className="w-full h-full rounded-full bg-near-black flex items-center justify-center text-xs font-bold text-text-light font-sans-brand">
+                  AN
+                </div>
+              </div>
+              
+              {sidebarExpanded && (
+                <div className="overflow-hidden">
+                  <div className="text-xs font-bold text-text-light truncate">Analyst User</div>
+                  <div className="text-[10px] text-text-muted truncate">enterprise@finsight.ai</div>
+                </div>
+              )}
+            </div>
+            
+            <div className="flex items-center justify-around text-text-muted">
+              <button className="hover:text-text-light transition-colors p-1" title="Settings">
+                <Settings size={16} />
+              </button>
+              <button className="hover:text-critical transition-colors p-1" title="Logout">
+                <LogOut size={16} />
+              </button>
+            </div>
+          </div>
         </div>
       </aside>
 
-      <div className="flex flex-col flex-1 h-screen overflow-hidden ml-64">
-        <header className="h-16 flex items-center justify-between px-8 border-b border-outline-variant bg-surface/80 backdrop-blur-md z-40 w-full">
+      {/* Main Content Area */}
+      <div 
+        className={`flex flex-col flex-1 h-screen overflow-hidden transition-all duration-300`}
+        style={{ marginLeft: sidebarExpanded ? '240px' : '68px' }}
+      >
+        {/* Header */}
+        <header className="h-16 flex items-center justify-between px-8 border-b border-border-divider bg-near-black/85 backdrop-blur-md z-40 w-full">
           <div className="flex items-center gap-4 flex-1">
-            <p className="text-body-sm text-on-surface-variant">
-              {docDetails ? `${docDetails.company_name} · ${docDetails.filename}` : 'No filing loaded'}
-            </p>
+            <h2 className="font-serif-display text-lg text-text-light font-bold">
+              {docDetails ? (
+                <span>
+                  {docDetails.company_name} <span className="text-text-muted text-xs font-normal">({docDetails.filename})</span>
+                </span>
+              ) : (
+                <span className="text-text-muted text-sm">No filing loaded</span>
+              )}
+            </h2>
           </div>
-          <button
-            onClick={() => navigate('upload')}
-            className="flex items-center gap-2 bg-primary/10 text-primary border border-primary/20 px-4 py-1.5 rounded-full hover:bg-primary/20 transition-colors"
-          >
-            <span className="material-symbols-outlined text-[20px]">upload_file</span>
-            <span className="font-label-caps text-label-caps">Upload Filing</span>
-          </button>
+          
+          <div className="flex items-center gap-4">
+            <button className="relative p-2 text-text-muted hover:text-text-light transition-colors">
+              <Bell size={18} />
+              <span className="absolute top-1 right-1 w-2 h-2 bg-burnt-orange rounded-full"></span>
+            </button>
+
+            <button
+              onClick={() => navigate('upload')}
+              className="flex items-center gap-2 bg-gradient-to-r from-vivid-red to-burnt-orange text-text-light px-4 py-1.5 rounded-full hover:brightness-110 transition-all font-sans-brand text-xs font-bold shadow-md"
+            >
+              <Upload size={14} />
+              <span>Upload Filing</span>
+            </button>
+          </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto custom-scrollbar bg-background-deep relative">
+        <main className="flex-1 overflow-y-auto custom-scrollbar bg-transparent relative">
           {activeTab === 'dashboard' && (
             docDetails ? (
               <Dashboard doc={docDetails} onNavigate={(tab) => navigate(tab)} />
@@ -175,9 +286,9 @@ function App() {
       {activeTab === 'dashboard' && docDetails && (
         <button
           onClick={() => navigate('assistant')}
-          className="fixed bottom-6 right-6 w-14 h-14 bg-secondary-container text-on-secondary-container rounded-full flex items-center justify-center shadow-lg hover:scale-110 active:scale-95 transition-all group z-50"
+          className="fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-tr from-vivid-red to-burnt-orange text-text-light rounded-full flex items-center justify-center shadow-lg hover:scale-110 active:scale-95 transition-all group z-50"
         >
-          <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>add</span>
+          <MessageSquare size={20} />
         </button>
       )}
     </div>

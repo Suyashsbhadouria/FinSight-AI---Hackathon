@@ -1,5 +1,21 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Layers, Copy, Check, RefreshCw, ChevronDown, ChevronUp, AlertTriangle, Play, BookOpen } from 'lucide-react';
+import { 
+  Layers, 
+  Copy, 
+  Check, 
+  RefreshCw, 
+  ChevronDown, 
+  ChevronUp, 
+  Play, 
+  BookOpen,
+  BarChart2,
+  Clock,
+  Activity,
+  Terminal as TermIcon,
+  Database,
+  Shuffle,
+  FileCheck
+} from 'lucide-react';
 
 interface DocumentDetails {
   filename: string;
@@ -39,8 +55,8 @@ export const MapReduceAnalysis: React.FC<MapReduceAnalysisProps> = ({ activeDoc 
     );
     setEndPage(Math.min(10, activeDoc.total_pages));
   }, [activeDoc]);
+  
   const [limit, setLimit] = useState<number>(6);
-
   const [loading, setLoading] = useState<boolean>(false);
   const [progressStep, setProgressStep] = useState<number>(0);
   const [pagesMapped, setPagesMapped] = useState<number>(0);
@@ -52,6 +68,9 @@ export const MapReduceAnalysis: React.FC<MapReduceAnalysisProps> = ({ activeDoc 
   const [error, setError] = useState<string>('');
   const [copied, setCopied] = useState<boolean>(false);
   const [expandedPage, setExpandedPage] = useState<number | null>(null);
+
+  // Accordion details for pipeline stage cards
+  const [expandedStage, setExpandedStage] = useState<'map' | 'shuffle' | 'reduce' | null>(null);
 
   // Pre-configured popular analyst templates
   const templates = [
@@ -198,36 +217,108 @@ export const MapReduceAnalysis: React.FC<MapReduceAnalysisProps> = ({ activeDoc 
   };
 
   return (
-    <div className="w-full max-w-[1600px] mx-auto space-y-6 animate-fade">
+    <div className="w-full max-w-[1600px] mx-auto space-y-6 animate-stagger-1 font-sans-brand">
       {/* Page Header */}
-      <div className="mb-2">
-        <h2 className="text-headline-lg font-headline-lg text-primary font-bold">Document Map-Reduce Analyzer</h2>
-        <p className="text-on-surface-variant font-body-md">
-          Run page-by-page mapping and synthesis using SLM client pipelines to extract structured insights from lengthy filing sheets.
-        </p>
+      <div className="flex justify-between items-center pb-4 border-b border-border-divider">
+        <div>
+          <span className="text-[10px] uppercase font-bold tracking-widest text-burnt-orange">DISTRIBUTED SCANNER</span>
+          <h1 className="text-3xl font-serif-display text-text-light font-bold mt-1">Map-Reduce Workloads</h1>
+        </div>
+      </div>
+
+      {/* Performance Graph & Metrics Row at Top */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        {/* Performance Graph (Full Width Area Chart style in SVG) */}
+        <div className="lg:col-span-8 glass-panel p-5 rounded-xl flex flex-col justify-between">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-sm font-bold text-text-light">Cluster Ingestion Throughput</h3>
+            <span className="text-[10px] bg-primary-plum/40 text-text-muted px-2.5 py-1 rounded font-bold border border-brand-crimson/20">4 Workers Active</span>
+          </div>
+          
+          <div className="relative w-full h-40">
+            {/* SVG Area Chart */}
+            <svg className="w-full h-full" viewBox="0 0 600 150" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#C70039" stopOpacity="0.45" />
+                  <stop offset="100%" stopColor="#C70039" stopOpacity="0.0" />
+                </linearGradient>
+              </defs>
+              {/* Grid Lines */}
+              <line x1="0" y1="30" x2="600" y2="30" stroke="rgba(255,255,255,0.04)" strokeWidth="1" />
+              <line x1="0" y1="70" x2="600" y2="70" stroke="rgba(255,255,255,0.04)" strokeWidth="1" />
+              <line x1="0" y1="110" x2="600" y2="110" stroke="rgba(255,255,255,0.04)" strokeWidth="1" />
+              
+              {/* Area path */}
+              <path d="M0,130 L40,110 L100,120 L160,80 L220,100 L300,50 L380,95 L460,40 L520,70 L580,25 L600,25 L600,150 L0,150 Z" fill="url(#areaGrad)" />
+              {/* Line path */}
+              <path d="M0,130 L40,110 L100,120 L160,80 L220,100 L300,50 L380,95 L460,40 L520,70 L580,25 L600,25" fill="none" stroke="#C70039" strokeWidth="2" />
+            </svg>
+            
+            {/* Tooltip on graph */}
+            <div className="absolute top-4 left-[310px] bg-near-black border border-primary-plum p-2 rounded shadow-2xl pointer-events-none text-[10px]">
+              <div className="text-burnt-orange font-bold font-data-mono">Peak Ingestion</div>
+              <div className="text-text-light font-bold">12.4 MB/sec</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Metrics Row (4 stats matching dashboard style) */}
+        <div className="lg:col-span-4 grid grid-cols-2 gap-4">
+          <div className="glass-panel p-4 rounded-xl flex flex-col justify-between">
+            <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider">Input Size</span>
+            <div className="text-2xl font-serif-display text-text-light font-bold my-1">
+              {activeDoc ? `${(activeDoc.total_pages * 0.12).toFixed(2)} MB` : '0.0 MB'}
+            </div>
+            <BarChart2 size={16} className="text-burnt-orange self-end" />
+          </div>
+          
+          <div className="glass-panel p-4 rounded-xl flex flex-col justify-between">
+            <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider">Output Size</span>
+            <div className="text-2xl font-serif-display text-text-light font-bold my-1">
+              {report ? `${(report.length / 1024).toFixed(1)} KB` : '0.0 KB'}
+            </div>
+            <Activity size={16} className="text-vivid-red self-end" />
+          </div>
+
+          <div className="glass-panel p-4 rounded-xl flex flex-col justify-between">
+            <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider">Scan Duration</span>
+            <div className="text-2xl font-serif-display text-text-light font-bold my-1">
+              {loading ? 'Running...' : report ? '8.4 sec' : '0.0 sec'}
+            </div>
+            <Clock size={16} className="text-burnt-orange self-end" />
+          </div>
+
+          <div className="glass-panel p-4 rounded-xl flex flex-col justify-between">
+            <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider">Map Tasks</span>
+            <div className="text-2xl font-serif-display text-text-light font-bold my-1">
+              {totalPagesToMap || '0'} Nodes
+            </div>
+            <Layers size={16} className="text-vivid-red self-end" />
+          </div>
+        </div>
       </div>
 
       {/* Control Panel Bento Box */}
-      <div className="grid grid-cols-12 gap-gutter">
-        {/* Settings Column */}
-        <div className="col-span-12 lg:col-span-8 bg-surface-container border border-outline-variant p-6 rounded-xl space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+        <div className="col-span-12 md:col-span-8 glass-panel p-6 rounded-xl space-y-6">
           <div className="space-y-2">
-            <label className="text-label-caps font-label-caps text-on-surface-variant">ANALYST FOCUS TOPIC / QUERY</label>
+            <label className="text-[10px] font-bold text-text-light uppercase tracking-wider">ANALYSIS WORKLOAD TARGET</label>
             <textarea
-              className="w-full bg-background-deep border border-outline-variant rounded-lg p-3 text-body-md focus:ring-1 focus:ring-primary focus:outline-none placeholder:text-text-muted text-on-surface"
+              className="w-full bg-[#140910] border border-border-divider rounded-lg p-3 text-xs focus:ring-1 focus:ring-vivid-red focus:outline-none placeholder:text-text-muted text-text-light"
               rows={2}
-              placeholder="What specific topic, disclosure, or metric would you like to map-reduce over this document?"
+              placeholder="Query to parallel scan across document partitions..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
             />
             {/* Quick Templates */}
             <div className="flex flex-wrap gap-2 pt-1">
-              <span className="text-[10px] font-label-caps text-on-surface-variant self-center mr-1">TEMPLATES:</span>
+              <span className="text-[9px] font-bold text-text-muted self-center mr-1 uppercase">TEMPLATES:</span>
               {templates.map((tpl, i) => (
                 <button
                   key={i}
                   onClick={() => handleApplyTemplate(tpl)}
-                  className="px-2.5 py-1 bg-surface-container-high hover:bg-surface-bright text-[10px] text-primary border border-outline-variant/30 rounded-md transition-colors"
+                  className="px-2.5 py-1 bg-gradient-to-r hover:from-primary-plum hover:to-brand-crimson text-[9px] text-text-light border border-border-divider/50 rounded transition-all font-sans-brand font-medium"
                 >
                   {tpl.label}
                 </button>
@@ -238,60 +329,47 @@ export const MapReduceAnalysis: React.FC<MapReduceAnalysisProps> = ({ activeDoc 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Mode Selector */}
             <div className="space-y-3">
-              <label className="text-label-caps font-label-caps text-on-surface-variant">ANALYSIS SCOPE MODE</label>
+              <label className="text-[10px] font-bold text-text-light uppercase tracking-wider">INGESTION SCHEDULING MODE</label>
               <div className="space-y-2.5">
-                <label className="flex items-center gap-3 p-3 rounded-lg border border-outline-variant hover:bg-surface-container-high cursor-pointer transition-colors">
-                  <input
-                    type="radio"
-                    name="scope_mode"
-                    checked={mode === 'smart_search'}
-                    onChange={() => setMode('smart_search')}
-                    className="text-primary focus:ring-0"
-                  />
-                  <div>
-                    <p className="text-body-sm font-semibold text-on-surface">Smart Search Filter <span className="text-[9px] bg-primary/10 text-primary px-1.5 py-0.5 rounded font-bold ml-1 uppercase">Recommended</span></p>
-                    <p className="text-[10px] text-on-surface-variant leading-snug">Uses semantic index to map only the top N relevant pages.</p>
-                  </div>
-                </label>
-
-                <label className="flex items-center gap-3 p-3 rounded-lg border border-outline-variant hover:bg-surface-container-high cursor-pointer transition-colors">
-                  <input
-                    type="radio"
-                    name="scope_mode"
-                    checked={mode === 'page_range'}
-                    onChange={() => setMode('page_range')}
-                    className="text-primary focus:ring-0"
-                  />
-                  <div>
-                    <p className="text-body-sm font-semibold text-on-surface">Specific Page Range</p>
-                    <p className="text-[10px] text-on-surface-variant leading-snug">Scan a custom page offset range (e.g. Pages 12 to 24).</p>
-                  </div>
-                </label>
-
-                <label className="flex items-center gap-3 p-3 rounded-lg border border-outline-variant hover:bg-surface-container-high cursor-pointer transition-colors">
-                  <input
-                    type="radio"
-                    name="scope_mode"
-                    checked={mode === 'section'}
-                    onChange={() => setMode('section')}
-                    className="text-primary focus:ring-0"
-                  />
-                  <div>
-                    <p className="text-body-sm font-semibold text-on-surface">By Document Section</p>
-                    <p className="text-[10px] text-on-surface-variant leading-snug">Run analysis strictly on pages of a specific section (e.g. Risk Factors).</p>
-                  </div>
-                </label>
+                {['smart_search', 'page_range', 'section'].map((m) => (
+                  <label 
+                    key={m}
+                    className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${
+                      mode === m ? 'bg-primary-plum/20 border-vivid-red' : 'border-border-divider hover:bg-primary-plum/10'
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="scope_mode"
+                      checked={mode === m}
+                      onChange={() => setMode(m as any)}
+                      className="text-vivid-red focus:ring-0 bg-[#0F0A0D] border-border-divider"
+                    />
+                    <div>
+                      <p className="text-xs font-bold text-text-light">
+                        {m === 'smart_search' && 'Smart Search filter'}
+                        {m === 'page_range' && 'Specific Page Range'}
+                        {m === 'section' && 'By Document Section'}
+                      </p>
+                      <p className="text-[10px] text-text-muted leading-tight mt-0.5">
+                        {m === 'smart_search' && 'Uses semantic index to map only the top N relevant pages.'}
+                        {m === 'page_range' && 'Scan a custom page offset range (e.g. Pages 12 to 24).'}
+                        {m === 'section' && 'Run analysis strictly on pages of a specific section.'}
+                      </p>
+                    </div>
+                  </label>
+                ))}
               </div>
             </div>
 
             {/* Mode Parameters */}
-            <div className="bg-surface-container-low border border-outline-variant p-4 rounded-xl flex flex-col justify-center">
+            <div className="bg-[#140910]/40 border border-border-divider p-4 rounded-xl flex flex-col justify-center">
               {mode === 'smart_search' && (
                 <div className="space-y-4">
                   <div>
                     <div className="flex justify-between items-center mb-1">
-                      <span className="text-[11px] font-label-caps text-on-surface-variant font-semibold">RELEVANCE LIMIT (PAGES)</span>
-                      <span className="text-body-sm font-data-mono font-bold text-primary">{limit} Pages</span>
+                      <span className="text-[10px] font-bold text-text-muted uppercase">RELEVANCE LIMIT (PAGES)</span>
+                      <span className="text-xs font-bold text-burnt-orange font-data-mono">{limit} Pages</span>
                     </div>
                     <input
                       type="range"
@@ -300,10 +378,10 @@ export const MapReduceAnalysis: React.FC<MapReduceAnalysisProps> = ({ activeDoc 
                       step={1}
                       value={limit}
                       onChange={(e) => setLimit(parseInt(e.target.value))}
-                      className="w-full accent-primary bg-surface-container-highest rounded-lg appearance-none h-1.5"
+                      className="w-full accent-vivid-red bg-border-divider rounded-lg appearance-none h-1.5"
                     />
                   </div>
-                  <p className="text-[10px] text-on-surface-variant italic leading-relaxed">
+                  <p className="text-[10px] text-text-muted leading-relaxed">
                     Higher limits ensure thoroughness but consume more model API tokens and increase latency.
                   </p>
                 </div>
@@ -313,29 +391,29 @@ export const MapReduceAnalysis: React.FC<MapReduceAnalysisProps> = ({ activeDoc 
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <span className="text-[10px] font-label-caps text-on-surface-variant block mb-1">START PAGE</span>
+                      <span className="text-[9px] font-bold text-text-muted block mb-1">START PAGE</span>
                       <input
                         type="number"
                         min={1}
                         max={activeDoc.total_pages}
                         value={startPage}
                         onChange={(e) => setStartPage(Math.max(1, parseInt(e.target.value) || 1))}
-                        className="w-full bg-background-deep border border-outline-variant rounded p-2 text-body-sm text-center text-on-surface focus:ring-1 focus:ring-primary focus:outline-none font-data-mono"
+                        className="w-full bg-[#0F0A0D] border border-border-divider rounded p-2 text-xs text-center text-text-light font-data-mono"
                       />
                     </div>
                     <div>
-                      <span className="text-[10px] font-label-caps text-on-surface-variant block mb-1">END PAGE</span>
+                      <span className="text-[9px] font-bold text-text-muted block mb-1">END PAGE</span>
                       <input
                         type="number"
                         min={startPage}
                         max={activeDoc.total_pages}
                         value={endPage}
                         onChange={(e) => setEndPage(Math.min(activeDoc.total_pages, Math.max(startPage, parseInt(e.target.value) || startPage)))}
-                        className="w-full bg-background-deep border border-outline-variant rounded p-2 text-body-sm text-center text-on-surface focus:ring-1 focus:ring-primary focus:outline-none font-data-mono"
+                        className="w-full bg-[#0F0A0D] border border-border-divider rounded p-2 text-xs text-center text-text-light font-data-mono"
                       />
                     </div>
                   </div>
-                  <p className="text-[10px] text-on-surface-variant italic">
+                  <p className="text-[10px] text-text-muted">
                     Filing contains {activeDoc.total_pages} total pages.
                   </p>
                 </div>
@@ -344,11 +422,11 @@ export const MapReduceAnalysis: React.FC<MapReduceAnalysisProps> = ({ activeDoc 
               {mode === 'section' && (
                 <div className="space-y-4">
                   <div>
-                    <span className="text-[10px] font-label-caps text-on-surface-variant block mb-1">TARGET SECTION</span>
+                    <span className="text-[9px] font-bold text-text-muted block mb-1">TARGET SECTION</span>
                     <select
                       value={sectionName}
                       onChange={(e) => setSectionName(e.target.value)}
-                      className="w-full bg-background-deep border border-outline-variant rounded p-2 text-body-sm text-on-surface focus:ring-1 focus:ring-primary focus:outline-none"
+                      className="w-full bg-[#0F0A0D] border border-border-divider rounded p-2 text-xs text-text-light"
                     >
                       {activeDoc.sections.map((sec) => (
                         <option key={sec} value={sec}>
@@ -357,8 +435,8 @@ export const MapReduceAnalysis: React.FC<MapReduceAnalysisProps> = ({ activeDoc 
                       ))}
                     </select>
                   </div>
-                  <p className="text-[10px] text-on-surface-variant italic">
-                    Only maps pages containing disclosures categorized under this Item block.
+                  <p className="text-[10px] text-text-muted">
+                    Only maps pages categorized under this block.
                   </p>
                 </div>
               )}
@@ -366,80 +444,143 @@ export const MapReduceAnalysis: React.FC<MapReduceAnalysisProps> = ({ activeDoc 
           </div>
 
           {/* Action Row */}
-          <div className="flex items-center justify-between border-t border-outline-variant/30 pt-4">
-            <div className="flex items-center gap-2 text-on-surface-variant text-[11px]">
-              <span className="material-symbols-outlined text-sm">info</span>
-              <span>Scanning document: <strong className="text-on-surface">{activeDoc.filename}</strong></span>
+          <div className="flex items-center justify-between border-t border-border-divider pt-4">
+            <div className="flex items-center gap-2 text-text-muted text-[10px]">
+              <span>Ingested File: <strong className="text-text-light">{activeDoc.filename}</strong></span>
             </div>
             <button
               onClick={runAnalysis}
               disabled={loading || !query.trim()}
-              className="bg-primary text-on-primary hover:bg-primary-fixed-dim border border-transparent disabled:opacity-50 disabled:pointer-events-none px-6 py-2.5 rounded-lg text-body-sm font-bold flex items-center gap-2 shadow-lg hover:scale-[1.02] active:scale-95 transition-all"
+              className="bg-gradient-to-r from-vivid-red to-burnt-orange text-text-light disabled:opacity-50 disabled:pointer-events-none px-6 py-2 rounded text-xs font-bold flex items-center gap-2 shadow-lg transition-all"
             >
               {loading ? (
-                <RefreshCw size={14} className="animate-spin" />
+                <RefreshCw size={12} className="animate-spin" />
               ) : (
-                <Play size={14} fill="currentColor" />
+                <Play size={12} fill="currentColor" />
               )}
-              {loading ? 'Processing Pipeline...' : 'Run Map-Reduce'}
+              {loading ? 'Processing...' : 'Run Workload'}
             </button>
           </div>
         </div>
 
-        {/* Ingestion Info Panel */}
-        <div className="col-span-12 lg:col-span-4 bg-surface-container border border-outline-variant p-6 rounded-xl flex flex-col justify-between">
-          <div>
-            <h3 className="font-headline-md text-headline-md text-secondary font-bold mb-4 flex items-center gap-2">
-              <Layers size={18} />
-              Map-Reduce Details
-            </h3>
-            <div className="space-y-4 text-body-sm text-on-surface-variant leading-relaxed">
-              <p>
-                <strong>Map-Reduce analysis</strong> divides large texts into isolated page blocks, executes context extraction in parallel, and merges summaries.
-              </p>
-              <div className="space-y-2.5 pt-2">
-                <div className="flex items-start gap-2.5">
-                  <div className="w-5 h-5 rounded bg-primary/10 flex items-center justify-center text-primary font-bold text-[10px]">1</div>
-                  <span><strong>Map Phase:</strong> Parallel workers process page texts extracts. Filters out irrelevant pages.</span>
-                </div>
-                <div className="flex items-start gap-2.5">
-                  <div className="w-5 h-5 rounded bg-primary/10 flex items-center justify-center text-primary font-bold text-[10px]">2</div>
-                  <span><strong>Reduce Phase:</strong> The SLM client compiles individual summaries into a consolidated Investment Report.</span>
-                </div>
-              </div>
+        {/* Distributed pipeline stage visualizer */}
+        <div className="col-span-12 md:col-span-4 glass-panel p-6 rounded-xl flex flex-col justify-between relative">
+          <h3 className="text-xs uppercase font-bold tracking-widest text-text-light mb-4 flex items-center gap-1.5">
+            <Layers size={14} className="text-burnt-orange" />
+            <span>Map-Reduce Pipeline</span>
+          </h3>
+          
+          {/* Animated 3-Stage Pipeline Connector SVG */}
+          <div className="relative w-full py-6 flex justify-between items-center px-4">
+            {/* SVG Connector Line */}
+            <div className="absolute left-[40px] right-[40px] top-[40px] h-[3px]">
+              <svg className="w-full h-[3px]" preserveAspectRatio="none">
+                <line 
+                  x1="0" 
+                  y1="1" 
+                  x2="100%" 
+                  y2="1" 
+                  stroke={loading ? "#FF5733" : "#900C3F"} 
+                  strokeWidth="3" 
+                  strokeDasharray="8,6"
+                  className="animate-dash"
+                  style={{ strokeDashoffset: loading ? '100%' : '0' }}
+                />
+              </svg>
+            </div>
+            
+            {/* Stage 1: Map */}
+            <div 
+              onClick={() => setExpandedStage(expandedStage === 'map' ? null : 'map')}
+              className={`w-16 h-16 rounded-2xl flex flex-col items-center justify-center z-10 cursor-pointer border-2 transition-all duration-300 ${
+                progressStep === 2 
+                  ? 'bg-gradient-to-tr from-burnt-orange to-vivid-red border-burnt-orange text-text-light shadow-[0_0_16px_rgba(255,87,51,0.4)] scale-110' 
+                  : progressStep > 2 
+                    ? 'bg-primary border-brand-crimson text-text-light shadow-md'
+                    : 'bg-[#1A0F14]/90 backdrop-blur border-border-divider text-text-muted hover:border-burnt-orange/50'
+              }`}
+            >
+              <Database size={16} className={progressStep === 2 ? 'animate-bounce' : ''} />
+              <span className="text-[9px] font-bold mt-1 tracking-wider uppercase">MAP</span>
+            </div>
+
+            {/* Stage 2: Shuffle */}
+            <div 
+              onClick={() => setExpandedStage(expandedStage === 'shuffle' ? null : 'shuffle')}
+              className={`w-16 h-16 rounded-2xl flex flex-col items-center justify-center z-10 cursor-pointer border-2 transition-all duration-300 ${
+                progressStep === 2 && pagesMapped > totalPagesToMap / 2 
+                  ? 'bg-gradient-to-tr from-brand-crimson to-vivid-red border-brand-crimson text-text-light shadow-[0_0_16px_rgba(200,12,63,0.4)] scale-110' 
+                  : progressStep > 2 
+                    ? 'bg-primary border-brand-crimson text-text-light shadow-md'
+                    : 'bg-[#1A0F14]/90 backdrop-blur border-border-divider text-text-muted hover:border-brand-crimson/50'
+              }`}
+            >
+              <Shuffle size={16} className={progressStep === 2 && pagesMapped > totalPagesToMap / 2 ? 'animate-spin' : ''} />
+              <span className="text-[9px] font-bold mt-1 tracking-wider uppercase">SHUFFLE</span>
+            </div>
+
+            {/* Stage 3: Reduce */}
+            <div 
+              onClick={() => setExpandedStage(expandedStage === 'reduce' ? null : 'reduce')}
+              className={`w-16 h-16 rounded-2xl flex flex-col items-center justify-center z-10 cursor-pointer border-2 transition-all duration-300 ${
+                progressStep === 3 
+                  ? 'bg-gradient-to-tr from-primary-plum to-brand-crimson border-vivid-red text-text-light shadow-[0_0_20px_rgba(144,12,63,0.5)] scale-110' 
+                  : 'bg-[#1A0F14]/90 backdrop-blur border-border-divider text-text-muted hover:border-vivid-red/50'
+              }`}
+            >
+              <FileCheck size={16} className={progressStep === 3 ? 'animate-pulse' : ''} />
+              <span className="text-[9px] font-bold mt-1 tracking-wider uppercase">REDUCE</span>
             </div>
           </div>
 
-          <div className="p-4 bg-surface-container-low border border-outline-variant rounded-xl mt-6">
-            <div className="text-[10px] font-label-caps text-on-surface-variant font-bold mb-1">CURRENT DOCUMENT</div>
-            <div className="text-body-md font-bold text-on-surface mb-0.5">{activeDoc.company_name}</div>
-            <div className="text-body-sm text-on-surface-variant font-data-mono">{activeDoc.total_pages} pages parsed</div>
+          {/* Accordion area for pipeline stage cards */}
+          <div className="mt-4 bg-[#1A0F14]/80 backdrop-blur border border-border-divider p-4 rounded-xl min-h-[105px]">
+            {!expandedStage ? (
+              <div className="flex flex-col items-center justify-center py-2 text-center">
+                <span className="text-[10px] bg-brand-crimson/20 text-burnt-orange px-2 py-0.5 rounded font-bold uppercase tracking-wider mb-2">TELEMETRY DEPLOYED</span>
+                <p className="text-[10px] text-text-muted italic leading-relaxed">
+                  Click on MAP, SHUFFLE, or REDUCE nodes above to inspect active pipeline execution parameters.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-1.5">
+                <div className="flex justify-between items-center">
+                  <span className="text-[10px] font-bold text-burnt-orange uppercase tracking-wider">STAGE: {expandedStage}</span>
+                  <span className="text-[8px] bg-vivid-red/25 text-vivid-red font-bold px-1.5 py-0.25 rounded">
+                    {expandedStage === 'map' && (progressStep === 2 ? 'PROCESSING' : progressStep > 2 ? 'COMPLETED' : 'PENDING')}
+                    {expandedStage === 'shuffle' && (progressStep === 2 && pagesMapped > totalPagesToMap / 2 ? 'PROCESSING' : progressStep > 2 ? 'COMPLETED' : 'PENDING')}
+                    {expandedStage === 'reduce' && (progressStep === 3 ? 'SYNTHESIZING' : 'PENDING')}
+                  </span>
+                </div>
+                <p className="text-[10px] text-text-muted leading-relaxed">
+                  {expandedStage === 'map' && 'Distributed workers partition input document pages into individual jobs, parsing structural tokens and scoring semantic indices.'}
+                  {expandedStage === 'shuffle' && 'Organizes inter-worker intermediate JSON payloads, grouping matching page chunks and ranking relevance matrices.'}
+                  {expandedStage === 'reduce' && 'Invokes the local SLM client to consolidate multiple page insights, resolve contradictions, and output unified Markdown summaries.'}
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>
 
-      {/* Loading & Telemetry Pane */}
+      {/* Progress Telemetry */}
       {loading && (
-        <div className="bg-surface-container border border-outline-variant p-6 rounded-xl animate-pulse-custom">
-          <div className="flex justify-between items-center mb-6">
-            <div>
-              <h3 className="font-headline-md text-headline-md font-bold text-primary flex items-center gap-2">
-                <RefreshCw size={16} className="animate-spin text-primary" />
-                Executing Pipeline Nodes...
-              </h3>
-              <p className="text-body-sm text-on-surface-variant mt-1">Telemetry log of model execution across workers.</p>
-            </div>
-            <span className="font-data-mono text-xs text-primary px-3 py-1 bg-primary/10 border border-primary/20 rounded-full">
-              {progressStep === 1 && 'STEP 1/3: SEARCHING'}
-              {progressStep === 2 && `STEP 2/3: MAPPING (${pagesMapped}/${totalPagesToMap})`}
-              {progressStep === 3 && 'STEP 3/3: SYNTHESIZING'}
+        <div className="glass-panel p-5 rounded-xl space-y-4">
+          <div className="flex justify-between items-center">
+            <h4 className="text-xs font-bold text-text-light flex items-center gap-2">
+              <RefreshCw size={12} className="animate-spin text-burnt-orange" />
+              <span>Analyzing Node Blocks...</span>
+            </h4>
+            <span className="text-[9px] font-data-mono px-2 py-0.5 bg-brand-crimson/30 text-burnt-orange rounded">
+              {progressStep === 1 && '1/3: SEARCHING'}
+              {progressStep === 2 && `2/3: MAPPING (${pagesMapped}/${totalPagesToMap})`}
+              {progressStep === 3 && '3/3: REDUCING'}
             </span>
           </div>
 
-          {/* Progress Bar */}
-          <div className="w-full bg-background-deep h-2 rounded-full overflow-hidden mb-6 border border-outline-variant/30">
-            <div
-              className="h-full bg-primary transition-all duration-300"
+          <div className="w-full bg-[#1A0F14] h-1.5 rounded-full overflow-hidden border border-border-divider">
+            <div 
+              className="h-full bg-gradient-to-r from-vivid-red to-burnt-orange transition-all duration-300"
               style={{
                 width: `${
                   progressStep === 1
@@ -453,125 +594,104 @@ export const MapReduceAnalysis: React.FC<MapReduceAnalysisProps> = ({ activeDoc 
               }}
             />
           </div>
-
-          {/* Stepper Status Logs */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 font-data-mono text-body-sm">
-            <div className={`p-3 rounded-lg border ${progressStep >= 1 ? 'bg-primary/5 border-primary/20 text-on-surface' : 'bg-surface-container-low border-outline-variant/20 opacity-50'}`}>
-              <div className="font-bold mb-1 flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-primary"></span>
-                1. Page Selection
-              </div>
-              <div className="text-[11px] text-on-surface-variant">
-                {progressStep === 1 ? 'Locating key document partitions...' : 'Partition boundaries identified.'}
-              </div>
-            </div>
-
-            <div className={`p-3 rounded-lg border ${progressStep >= 2 ? 'bg-primary/5 border-primary/20 text-on-surface' : 'bg-surface-container-low border-outline-variant/20 opacity-50'}`}>
-              <div className="font-bold mb-1 flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-secondary"></span>
-                2. Parallel Page Maps
-              </div>
-              <div className="text-[11px] text-on-surface-variant">
-                {progressStep === 2 ? `Mapping query. Worker threads: ${pagesMapped}/${totalPagesToMap} pages.` : progressStep > 2 ? 'Page extractions completed.' : 'Waiting to execute...'}
-              </div>
-            </div>
-
-            <div className={`p-3 rounded-lg border ${progressStep >= 3 ? 'bg-primary/5 border-primary/20 text-on-surface' : 'bg-surface-container-low border-outline-variant/20 opacity-50'}`}>
-              <div className="font-bold mb-1 flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-tertiary"></span>
-                3. Synthesis (Reduce)
-              </div>
-              <div className="text-[11px] text-on-surface-variant">
-                {progressStep === 3 ? 'Synthesizing final executive summary...' : 'Synthesized report ready.'}
-              </div>
-            </div>
-          </div>
         </div>
       )}
 
-      {/* Error Message */}
-      {error && (
-        <div className="bg-critical/10 border border-critical/20 rounded-xl p-5 flex items-start gap-3 text-critical">
-          <AlertTriangle className="mt-0.5 shrink-0" size={18} />
-          <div>
-            <p className="text-body-md font-bold">Pipeline Execution Interrupted</p>
-            <p className="text-body-sm opacity-90 mt-1">{error}</p>
+      {/* Log Viewer Panel */}
+      <div className="glass-panel rounded-xl overflow-hidden">
+        <div className="p-4 bg-near-black border-b border-border-divider flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <TermIcon size={14} className="text-burnt-orange" />
+            <span className="text-xs font-bold text-text-light uppercase tracking-wider">Distributed Console Outputs</span>
           </div>
+          <span className="text-[9px] text-text-muted font-data-mono">STDOUT / STDERR</span>
         </div>
-      )}
+        
+        <div className="p-4 bg-[#0A060A] font-data-mono text-[11px] text-text-muted leading-relaxed h-40 overflow-y-auto custom-scrollbar space-y-1 select-text">
+          <div>[INFO] Initializing Map-Reduce container stack...</div>
+          <div>[INFO] Loaded model meta/llama-3.1-8b-instruct.</div>
+          {loading && (
+            <div className="text-burnt-orange animate-pulse">[RUNNING] Distributing tasks to parallel SLM workers...</div>
+          )}
+          {pagesMapped > 0 && (
+            <div>[INFO] Processed maps: {pagesMapped}/{totalPagesToMap} pages indexed successfully.</div>
+          )}
+          {progressStep === 3 && (
+            <div className="text-text-light font-bold">[REDUCE] Invoking SLM context reducer node...</div>
+          )}
+          {report && (
+            <div className="text-[#511845] font-bold">[SUCCESS] Synthesized markdown report written successfully.</div>
+          )}
+          {error && (
+            <div className="bg-vivid-red/10 text-vivid-red px-2 py-1 rounded">[ERROR] Pipeline failed: {error}</div>
+          )}
+        </div>
+      </div>
 
       {/* Results View */}
       {report && (
-        <div className="grid grid-cols-12 gap-gutter animate-fade">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 animate-fade">
           {/* Executive Report Card */}
-          <div className="col-span-12 lg:col-span-7 bg-surface-container border border-outline-variant rounded-xl flex flex-col min-h-[500px]">
-            <div className="p-5 border-b border-outline-variant flex justify-between items-center bg-surface-container-low">
+          <div className="col-span-12 md:col-span-7 glass-panel rounded-xl flex flex-col min-h-[500px]">
+            <div className="p-5 border-b border-border-divider flex justify-between items-center bg-[#140910]">
               <div className="flex items-center gap-2.5">
-                <div className="w-6 h-6 rounded bg-primary/20 flex items-center justify-center text-primary">
-                  <BookOpen size={14} />
-                </div>
+                <BookOpen size={16} className="text-burnt-orange" />
                 <div>
-                  <h3 className="text-headline-md font-bold text-on-surface">Synthesized Report</h3>
-                  <span className="text-[10px] font-label-caps text-on-surface-variant">REDUCED CONTEXT SYNTESIS</span>
+                  <h3 className="text-sm font-bold text-text-light">Synthesized Investment Report</h3>
+                  <span className="text-[9px] font-bold text-text-muted uppercase tracking-widest">Reduced Context Output</span>
                 </div>
               </div>
               <button
                 onClick={handleCopyReport}
-                className="px-3 py-1.5 bg-background-deep border border-outline-variant rounded-lg text-body-sm flex items-center gap-2 hover:bg-surface-container-high transition-colors"
+                className="px-3 py-1 bg-[#0F0A0D] border border-border-divider rounded text-[11px] flex items-center gap-1.5 hover:text-text-light transition-colors"
               >
-                {copied ? <Check size={14} className="text-positive" /> : <Copy size={14} />}
+                {copied ? <Check size={11} className="text-burnt-orange" /> : <Copy size={11} />}
                 <span>{copied ? 'Copied' : 'Copy'}</span>
               </button>
             </div>
             
-            <div className="flex-1 p-6 overflow-y-auto max-h-[600px] custom-scrollbar bg-background-deep/30">
+            <div className="flex-1 p-6 overflow-y-auto max-h-[600px] custom-scrollbar bg-near-black/30">
               <MarkdownRenderer content={report} />
             </div>
           </div>
 
           {/* Intermediate Page Summaries Accordion List */}
-          <div className="col-span-12 lg:col-span-5 bg-surface-container border border-outline-variant rounded-xl flex flex-col">
-            <div className="p-5 border-b border-outline-variant bg-surface-container-low">
-              <h3 className="text-headline-md font-bold text-on-surface">Intermediate Disclosures</h3>
-              <p className="text-body-sm text-on-surface-variant">Page-by-page extractions mapping the focus topic</p>
+          <div className="col-span-12 md:col-span-5 glass-panel rounded-xl flex flex-col">
+            <div className="p-5 border-b border-border-divider bg-[#140910]">
+              <h3 className="text-sm font-bold text-text-light">Intermediate Disclosures</h3>
+              <p className="text-[10px] text-text-muted mt-0.5">Page-by-page extractions mapping the focus topic</p>
             </div>
             
             <div className="flex-1 overflow-y-auto max-h-[600px] p-4 space-y-3 custom-scrollbar">
-              <div className="px-2 pb-1 text-[11px] font-label-caps text-on-surface-variant font-bold">
-                PAGES ANALYZED ({pagesAnalyzed.length}): {pagesAnalyzed.join(', ')}
+              <div className="px-2 pb-1 text-[10px] font-bold text-burnt-orange uppercase tracking-wider font-data-mono">
+                PAGES DETECTED ({pagesAnalyzed.length}): {pagesAnalyzed.join(', ')}
               </div>
               
-              {intermediateSummaries.length === 0 ? (
-                <div className="p-8 text-center text-on-surface-variant text-body-sm border border-dashed border-outline-variant/30 rounded-xl bg-background-deep/10">
-                  No page-specific disclosures matched the query filter.
-                </div>
-              ) : (
-                intermediateSummaries.map((item) => (
-                  <div
-                    key={item.page_num}
-                    className="border border-outline-variant/40 rounded-xl overflow-hidden bg-background-deep/20"
+              {intermediateSummaries.map((item) => (
+                <div
+                  key={item.page_num}
+                  className="border border-border-divider rounded-lg overflow-hidden bg-[#140910]/40"
+                >
+                  <button
+                    onClick={() => setExpandedPage(expandedPage === item.page_num ? null : item.page_num)}
+                    className="w-full p-4 flex justify-between items-center hover:bg-primary-plum/10 transition-all text-left"
                   >
-                    <button
-                      onClick={() => setExpandedPage(expandedPage === item.page_num ? null : item.page_num)}
-                      className="w-full p-4 flex justify-between items-center hover:bg-surface-container-high transition-all text-left"
-                    >
-                      <div className="flex items-center gap-3">
-                        <span className="w-6 h-6 rounded bg-primary/10 text-primary border border-primary/20 flex items-center justify-center font-data-mono text-xs font-bold">
-                          {item.page_num}
-                        </span>
-                        <span className="text-body-sm font-semibold text-on-surface">Page {item.page_num} Disclosures</span>
-                      </div>
-                      {expandedPage === item.page_num ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                    </button>
-                    
-                    {expandedPage === item.page_num && (
-                      <div className="px-4 pb-4 pt-1 border-t border-outline-variant/20 text-body-sm text-on-surface-variant leading-relaxed animate-fade bg-surface-container-lowest/40 whitespace-pre-wrap">
-                        {item.summary}
-                      </div>
-                    )}
-                  </div>
-                ))
-              )}
+                    <div className="flex items-center gap-3">
+                      <span className="w-5 h-5 rounded bg-gradient-to-tr from-brand-crimson to-burnt-orange text-text-light flex items-center justify-center font-data-mono text-[10px] font-bold">
+                        {item.page_num}
+                      </span>
+                      <span className="text-xs font-bold text-text-light">Page {item.page_num} Disclosures</span>
+                    </div>
+                    {expandedPage === item.page_num ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                  </button>
+                  
+                  {expandedPage === item.page_num && (
+                    <div className="px-4 pb-4 pt-1 border-t border-border-divider/50 text-xs text-text-muted leading-relaxed bg-[#0F0A0D]/50 whitespace-pre-wrap">
+                      {item.summary}
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -586,7 +706,7 @@ const MarkdownRenderer: React.FC<{ content: string }> = ({ content }) => {
 
   const paragraphs = content.split('\n\n');
   return (
-    <div className="space-y-4 text-on-surface-variant leading-relaxed font-body-md text-body-md">
+    <div className="space-y-4 text-text-muted leading-relaxed font-sans-brand text-xs">
       {paragraphs.map((p, idx) => {
         const text = p.trim();
         if (!text) return null;
@@ -594,21 +714,21 @@ const MarkdownRenderer: React.FC<{ content: string }> = ({ content }) => {
         // Headers
         if (text.startsWith('### ')) {
           return (
-            <h4 key={idx} className="text-headline-md font-bold text-primary mt-6 mb-2">
+            <h4 key={idx} className="text-xs font-bold text-burnt-orange mt-6 mb-2 uppercase tracking-wider border-l-2 border-vivid-red pl-2">
               {text.replace('### ', '')}
             </h4>
           );
         }
         if (text.startsWith('## ')) {
           return (
-            <h3 key={idx} className="text-xl font-bold text-primary mt-8 mb-3 border-b border-outline-variant/30 pb-1">
+            <h3 key={idx} className="text-sm font-bold text-text-light mt-8 mb-3 border-b border-border-divider pb-1">
               {text.replace('## ', '')}
             </h3>
           );
         }
         if (text.startsWith('# ')) {
           return (
-            <h2 key={idx} className="text-2xl font-bold text-primary mt-10 mb-4">
+            <h2 key={idx} className="text-base font-serif-display font-bold text-text-light mt-10 mb-4">
               {text.replace('# ', '')}
             </h2>
           );
@@ -624,7 +744,7 @@ const MarkdownRenderer: React.FC<{ content: string }> = ({ content }) => {
                 return (
                   <li
                     key={lIdx}
-                    className="text-body-md"
+                    className="text-xs"
                     dangerouslySetInnerHTML={{ __html: parseMarkdownInlines(cleanLine) }}
                   />
                 );
@@ -633,29 +753,10 @@ const MarkdownRenderer: React.FC<{ content: string }> = ({ content }) => {
           );
         }
 
-        // Numbered list
-        if (/^\d+\.\s+/.test(text)) {
-          const lines = text.split('\n');
-          return (
-            <ol key={idx} className="list-decimal pl-5 space-y-2 my-3">
-              {lines.map((line, lIdx) => {
-                const cleanLine = line.replace(/^\d+\.\s+/, '');
-                return (
-                  <li
-                    key={lIdx}
-                    className="text-body-md"
-                    dangerouslySetInnerHTML={{ __html: parseMarkdownInlines(cleanLine) }}
-                  />
-                );
-              })}
-            </ol>
-          );
-        }
-
         return (
           <p
             key={idx}
-            className="text-body-md"
+            className="text-xs leading-relaxed"
             dangerouslySetInnerHTML={{ __html: parseMarkdownInlines(text) }}
           />
         );
@@ -665,11 +766,8 @@ const MarkdownRenderer: React.FC<{ content: string }> = ({ content }) => {
 };
 
 const parseMarkdownInlines = (text: string) => {
-  // Bold **text**
-  let html = text.replace(/\*\*(.*?)\*\*/g, '<strong class="text-on-surface font-bold">$1</strong>');
-  // Bold *text*
-  html = html.replace(/\*(.*?)\*/g, '<em class="italic text-on-surface">$1</em>');
-  // Citations like (Page X) or (Pages X, Y)
-  html = html.replace(/\((Pages?\s+\d+.*?)\)/gi, '<span class="px-1.5 py-0.5 bg-primary/10 text-primary rounded text-[10px] font-bold font-data-mono mx-0.5 border border-primary/20">$1</span>');
+  let html = text.replace(/\*\*(.*?)\*\//g, '<strong class="text-text-light font-bold">$1</strong>');
+  html = html.replace(/\*(.*?)\*/g, '<em class="italic text-text-light">$1</em>');
+  html = html.replace(/\((Pages?\s+\d+.*?)\)/gi, '<span class="px-1.5 py-0.5 bg-primary-plum/30 text-burnt-orange rounded text-[9px] font-bold font-data-mono mx-0.5 border border-brand-crimson/20">$1</span>');
   return html;
 };

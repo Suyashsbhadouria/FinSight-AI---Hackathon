@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Check } from 'lucide-react';
+import { Check, UploadCloud, FileText, AlertTriangle, Shield, Zap } from 'lucide-react';
 
 interface FilingUploadProps {
   onUploadSuccess: (details: {
@@ -124,22 +124,22 @@ export const FilingUpload: React.FC<FilingUploadProps> = ({ onUploadSuccess }) =
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto py-6 animate-fade">
+    <div className="w-full max-w-4xl mx-auto py-6 animate-stagger-1 font-sans-brand">
       {/* Header Section */}
-      <div className="mb-8">
-        <h2 className="text-headline-lg font-headline-lg text-primary font-bold mb-2">Filing Upload & Ingestion</h2>
-        <p className="text-on-surface-variant text-body-md">Ingest regulatory SEC filings for deep risk analysis and AI-powered extraction.</p>
+      <div className="mb-8 pb-4 border-b border-border-divider">
+        <span className="text-[10px] uppercase font-bold tracking-widest text-burnt-orange">INGESTION PANEL</span>
+        <h2 className="text-3xl font-serif-display text-text-light font-bold mt-1">Filing Upload & Ingestion</h2>
       </div>
 
       {/* Upload Zone */}
       {!uploading ? (
-        <label className="group border-2 border-dashed border-outline-variant bg-surface-container-low hover:border-primary/50 hover:bg-surface-container transition-all duration-300 rounded-xl p-12 flex flex-col items-center justify-center cursor-pointer min-h-[320px] mb-6 block">
-          <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-            <span className="material-symbols-outlined text-[40px] text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>cloud_upload</span>
+        <label className="group border-2 border-dashed border-border-divider bg-near-black hover:border-vivid-red hover:bg-[#1A0F14]/40 transition-all duration-300 rounded-xl p-12 flex flex-col items-center justify-center cursor-pointer min-h-[320px] mb-6 block">
+          <div className="w-16 h-16 rounded-full bg-primary-plum/30 flex items-center justify-center mb-6 group-hover:scale-110 transition-all border border-brand-crimson/20">
+            <UploadCloud size={28} className="text-burnt-orange" />
           </div>
-          <p className="text-headline-md font-headline-md mb-2">Drag and drop filing PDF here</p>
-          <p className="text-on-surface-variant text-body-sm mb-6">Supports standard SEC PDF disclosures (Max 500MB)</p>
-          <span className="px-8 py-2.5 bg-surface-container-highest border border-outline-variant text-on-surface rounded-lg font-body-md hover:bg-surface-bright transition-colors">
+          <p className="text-sm font-bold text-text-light mb-2">Drag and drop filing PDF here</p>
+          <p className="text-text-muted text-[11px] mb-6">Supports standard SEC PDF disclosures (Max 500MB)</p>
+          <span className="px-6 py-2 bg-[#0F0A0D] border border-border-divider text-text-light rounded font-bold text-xs hover:border-burnt-orange transition-all">
             Browse Files
           </span>
           <input 
@@ -154,79 +154,79 @@ export const FilingUpload: React.FC<FilingUploadProps> = ({ onUploadSuccess }) =
         <div className="glass-panel rounded-xl p-6 mb-6 overflow-hidden relative">
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center animate-pulse-custom">
-                <span className="material-symbols-outlined text-primary">description</span>
+              <div className="w-12 h-12 bg-primary-plum/30 rounded-lg flex items-center justify-center border border-brand-crimson/20">
+                <FileText size={20} className="text-burnt-orange" />
               </div>
               <div>
-                <p className="font-data-mono text-body-sm text-primary uppercase">FILE: {fileId}</p>
-                <p className="text-headline-md font-headline-md font-bold">Ingesting Annual Report</p>
+                <p className="font-data-mono text-[10px] text-burnt-orange uppercase">FILE: {fileId}</p>
+                <p className="text-base font-bold text-text-light">Ingesting Annual Report</p>
               </div>
             </div>
             <div className="text-right">
-              <p className="font-data-mono text-headline-md text-primary text-xl font-bold">{Math.floor(progress)}%</p>
-              <p className="text-label-caps font-label-caps text-on-surface-variant">PROCESSING LAYOUT</p>
+              <p className="font-data-mono text-text-light text-xl font-bold">{Math.floor(progress)}%</p>
+              <p className="text-[9px] font-bold text-text-muted uppercase tracking-wider">PROCESSING LAYOUT</p>
             </div>
           </div>
 
           {/* Stepper */}
-          <div className="relative w-full mb-8">
+          <div className="relative w-full mb-8 px-4">
             <div className="flex items-center justify-between relative z-10">
               {/* Step 1 */}
               <div className="flex flex-col items-center gap-2">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center border-4 border-background-deep ${currentStep > 1 ? 'bg-positive' : 'bg-primary ring-4 ring-primary/20'}`}>
-                  {currentStep > 1 ? <Check size={14} className="text-background-deep font-bold" /> : <span className="text-xs">1</span>}
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center border-4 border-background-deep ${currentStep > 1 ? 'bg-primary-plum text-text-light' : 'bg-[#FF5733] text-text-light ring-4 ring-[#FF5733]/20'}`}>
+                  {currentStep > 1 ? <Check size={12} className="font-bold" /> : <span className="text-xs font-bold">1</span>}
                 </div>
-                <span className={`text-[10px] font-label-caps ${currentStep >= 1 ? 'text-primary' : 'text-on-surface-variant'}`}>Upload</span>
+                <span className={`text-[9px] font-bold uppercase tracking-wider ${currentStep >= 1 ? 'text-burnt-orange' : 'text-text-muted'}`}>Upload</span>
               </div>
 
               {/* Step 2 */}
               <div className="flex flex-col items-center gap-2">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center border-4 border-background-deep ${currentStep > 2 ? 'bg-positive' : currentStep === 2 ? 'bg-primary ring-4 ring-primary/20' : 'bg-surface-container-highest'}`}>
-                  {currentStep > 2 ? <Check size={14} className="text-background-deep font-bold" /> : <span className="text-xs">2</span>}
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center border-4 border-background-deep ${currentStep > 2 ? 'bg-primary-plum text-text-light' : currentStep === 2 ? 'bg-[#FF5733] text-text-light ring-4 ring-[#FF5733]/20' : 'bg-near-black text-text-muted'}`}>
+                  {currentStep > 2 ? <Check size={12} className="font-bold" /> : <span className="text-xs font-bold">2</span>}
                 </div>
-                <span className={`text-[10px] font-label-caps ${currentStep >= 2 ? 'text-primary' : 'text-on-surface-variant'}`}>Parse</span>
+                <span className={`text-[9px] font-bold uppercase tracking-wider ${currentStep >= 2 ? 'text-burnt-orange' : 'text-text-muted'}`}>Parse</span>
               </div>
 
               {/* Step 3 */}
               <div className="flex flex-col items-center gap-2">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center border-4 border-background-deep ${currentStep > 3 ? 'bg-positive' : currentStep === 3 ? 'bg-primary ring-4 ring-primary/20' : 'bg-surface-container-highest'}`}>
-                  {currentStep > 3 ? <Check size={14} className="text-background-deep font-bold" /> : <span className="text-xs">3</span>}
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center border-4 border-background-deep ${currentStep > 3 ? 'bg-primary-plum text-text-light' : currentStep === 3 ? 'bg-[#FF5733] text-text-light ring-4 ring-[#FF5733]/20' : 'bg-near-black text-text-muted'}`}>
+                  {currentStep > 3 ? <Check size={12} className="font-bold" /> : <span className="text-xs font-bold">3</span>}
                 </div>
-                <span className={`text-[10px] font-label-caps ${currentStep >= 3 ? 'text-primary' : 'text-on-surface-variant'}`}>Extraction</span>
+                <span className={`text-[9px] font-bold uppercase tracking-wider ${currentStep >= 3 ? 'text-burnt-orange' : 'text-text-muted'}`}>Extraction</span>
               </div>
 
               {/* Step 4 */}
               <div className="flex flex-col items-center gap-2">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center border-4 border-background-deep ${currentStep > 4 ? 'bg-positive' : currentStep === 4 ? 'bg-primary ring-4 ring-primary/20 animate-pulse' : 'bg-surface-container-highest'}`}>
-                  {currentStep > 4 ? <Check size={14} className="text-background-deep font-bold" /> : <span className="text-xs">4</span>}
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center border-4 border-background-deep ${currentStep > 4 ? 'bg-primary-plum text-text-light' : currentStep === 4 ? 'bg-[#FF5733] text-text-light ring-4 ring-[#FF5733]/20 animate-pulse' : 'bg-near-black text-text-muted'}`}>
+                  {currentStep > 4 ? <Check size={12} className="font-bold" /> : <span className="text-xs font-bold">4</span>}
                 </div>
-                <span className={`text-[10px] font-label-caps ${currentStep >= 4 ? 'text-primary' : 'text-on-surface-variant'}`}>Risk Index</span>
+                <span className={`text-[9px] font-bold uppercase tracking-wider ${currentStep >= 4 ? 'text-burnt-orange' : 'text-text-muted'}`}>Risk Index</span>
               </div>
 
               {/* Step 5 */}
               <div className="flex flex-col items-center gap-2">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center border-4 border-background-deep ${currentStep === 5 ? 'bg-positive ring-4 ring-positive/20' : 'bg-surface-container-highest'}`}>
-                  <span className="text-xs">5</span>
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center border-4 border-background-deep ${currentStep === 5 ? 'bg-primary-plum text-text-light ring-4 ring-primary-plum/20' : 'bg-near-black text-text-muted'}`}>
+                  <span className="text-xs font-bold">5</span>
                 </div>
-                <span className={`text-[10px] font-label-caps ${currentStep === 5 ? 'text-positive font-bold' : 'text-on-surface-variant'}`}>Ready</span>
+                <span className={`text-[9px] font-bold uppercase tracking-wider ${currentStep === 5 ? 'text-text-light font-bold' : 'text-text-muted'}`}>Ready</span>
               </div>
             </div>
 
             {/* Progress line */}
-            <div className="absolute top-4 left-0 w-full h-[2px] bg-surface-container-highest -z-0">
-              <div className="h-full bg-primary transition-all duration-300" style={{ width: `${(currentStep - 1) * 25}%` }}></div>
+            <div className="absolute top-4 left-0 w-full h-[2px] bg-border-divider -z-0">
+              <div className="h-full bg-gradient-to-r from-vivid-red to-burnt-orange transition-all duration-300" style={{ width: `${(currentStep - 1) * 25}%` }}></div>
             </div>
           </div>
 
           {/* Status Console */}
-          <div className="bg-background-deep/50 rounded-lg p-4 ai-purple-border">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-2 h-2 rounded-full bg-secondary animate-pulse"></div>
-              <p className="font-data-mono text-body-sm text-on-surface">Console Telemetry Log</p>
+          <div className="bg-[#0A060A] rounded-lg p-4 border border-border-divider">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-1.5 h-1.5 rounded-full bg-burnt-orange animate-pulse"></div>
+              <p className="font-data-mono text-[10px] text-text-light uppercase tracking-wider">Console Telemetry Log</p>
             </div>
-            <div className="space-y-1 pl-5 font-data-mono text-body-sm text-on-surface-variant max-h-32 overflow-y-auto">
+            <div className="space-y-1 pl-3 font-data-mono text-[11px] text-text-muted max-h-32 overflow-y-auto custom-scrollbar">
               {logs.map((log, index) => (
-                <p key={index} className={index === logs.length - 1 ? "text-primary" : "opacity-60"}>{log}</p>
+                <p key={index} className={index === logs.length - 1 ? "text-burnt-orange" : "opacity-60"}>{log}</p>
               ))}
             </div>
           </div>
@@ -234,29 +234,30 @@ export const FilingUpload: React.FC<FilingUploadProps> = ({ onUploadSuccess }) =
       )}
 
       {error && (
-        <div className="bg-critical/10 border border-critical/20 rounded-xl p-4 flex items-center gap-3 text-critical text-body-sm mb-6">
-          <span className="material-symbols-outlined">alert_circle</span>
+        <div className="bg-vivid-red/10 border border-vivid-red/20 rounded-xl p-4 flex items-center gap-2.5 text-vivid-red text-xs mb-6">
+          <AlertTriangle size={14} className="shrink-0" />
           <span>{error}</span>
         </div>
       )}
 
       {/* Bento Info Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-gutter">
-        <div className="bg-surface-container-low border border-outline-variant rounded-xl p-5 hover:bg-surface-container transition-colors">
-          <div className="flex items-center gap-3 mb-3">
-            <span className="material-symbols-outlined text-secondary">security</span>
-            <h3 className="text-body-md font-bold">Encrypted Isolation</h3>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="glass-panel rounded-xl p-5">
+          <div className="flex items-center gap-2.5 mb-3 text-text-light">
+            <Shield size={16} className="text-burnt-orange" />
+            <h3 className="text-xs font-bold uppercase tracking-wider">Encrypted Isolation</h3>
           </div>
-          <p className="text-body-sm text-on-surface-variant leading-relaxed">
+          <p className="text-xs text-text-muted leading-relaxed">
             All uploaded filings are protected in transit and at rest. Documents are siloed per analyst profile and are never processed for public model training.
           </p>
         </div>
-        <div className="bg-surface-container-low border border-outline-variant rounded-xl p-5 hover:bg-surface-container transition-colors">
-          <div className="flex items-center gap-3 mb-3">
-            <span className="material-symbols-outlined text-tertiary">bolt</span>
-            <h3 className="text-body-md font-bold">Auto-Extraction</h3>
+        
+        <div className="glass-panel rounded-xl p-5">
+          <div className="flex items-center gap-2.5 mb-3 text-text-light">
+            <Zap size={16} className="text-burnt-orange" />
+            <h3 className="text-xs font-bold uppercase tracking-wider">Auto-Extraction</h3>
           </div>
-          <p className="text-body-sm text-on-surface-variant leading-relaxed">
+          <p className="text-xs text-text-muted leading-relaxed">
             Our parser automatically categorizes sections (Item 1, 1A, 7, 8) so you don't have to search manually. Embeddings populate immediate context tools.
           </p>
         </div>

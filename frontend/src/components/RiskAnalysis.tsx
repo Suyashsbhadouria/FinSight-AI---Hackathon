@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { RefreshCw } from 'lucide-react';
+import { RefreshCw, ShieldAlert } from 'lucide-react';
 
 interface Risk {
   title: string;
@@ -51,28 +51,39 @@ export const RiskAnalysis: React.FC = () => {
     return 'STABLE';
   };
 
+  const getSeverityBadgeClass = (severity: number) => {
+    if (severity >= 8) return 'bg-vivid-red/10 text-vivid-red border-vivid-red/20';
+    if (severity >= 5) return 'bg-burnt-orange/10 text-burnt-orange border-burnt-orange/20';
+    return 'bg-[#511845]/30 text-text-light border-primary-plum/30';
+  };
+
   const criticalPct = risks.length ? Math.round((criticalCount / risks.length) * 100) : 0;
   const highPct = risks.length ? Math.round((highCount / risks.length) * 100) : 0;
   const stablePct = risks.length ? Math.round((stableCount / risks.length) * 100) : 0;
 
   return (
-    <div className="w-full max-w-[1600px] mx-auto space-y-6 animate-fade">
-      <div className="flex justify-between items-end mb-2">
+    <div className="w-full max-w-[1600px] mx-auto space-y-6 animate-stagger-1 font-sans-brand">
+      {/* Header */}
+      <div className="flex justify-between items-center pb-4 border-b border-border-divider">
         <div>
-          <h2 className="text-headline-lg font-headline-lg text-primary font-bold">Risk Intelligence Hub</h2>
-          <p className="text-on-surface-variant font-body-md">Deep semantic extraction and algorithmic risk categorization.</p>
+          <span className="text-[10px] uppercase font-bold tracking-widest text-burnt-orange">RISK METRICS</span>
+          <h2 className="text-3xl font-serif-display text-text-light font-bold mt-1">Risk Intelligence Hub</h2>
         </div>
-        <div className="flex gap-3">
-          <div className="bg-surface-container px-3 py-1.5 border border-outline-variant rounded-lg flex items-center gap-3">
+        
+        <div className="flex items-center gap-4">
+          <div className="bg-[#140910] border border-border-divider px-4 py-2 rounded-lg flex items-center gap-3">
             <div className="text-right">
-              <p className="text-label-caps font-label-caps text-on-surface-variant">AGGREGATE RISK</p>
-              <p className="text-headline-md font-headline-md text-critical font-bold">{aggregateRisk} / 10</p>
+              <p className="text-[9px] font-bold text-text-muted uppercase">AGGREGATE EXPOSURE</p>
+              <p className="text-lg font-serif-display text-vivid-red font-bold">{aggregateRisk} / 10</p>
             </div>
+            <ShieldAlert className="text-vivid-red" size={20} />
           </div>
+          
           <button
             onClick={fetchRisks}
             disabled={loading}
-            className="bg-surface-container hover:bg-surface-container-high border border-outline-variant px-3 py-2 rounded-lg text-body-sm flex items-center gap-2"
+            className="p-2 border border-border-divider hover:border-burnt-orange rounded text-text-light hover:bg-[#511845]/15 transition-all"
+            title="Refresh Scan"
           >
             <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
           </button>
@@ -80,43 +91,46 @@ export const RiskAnalysis: React.FC = () => {
       </div>
 
       {error && (
-        <div className="bg-warning/10 border border-warning/20 rounded-xl p-4 text-warning text-body-sm">{error}</div>
+        <div className="bg-vivid-red/10 border border-vivid-red/20 rounded-xl p-4 text-vivid-red text-xs">
+          {error}
+        </div>
       )}
 
-      <div className="grid grid-cols-12 gap-gutter">
-        <div className="col-span-12 lg:col-span-4 bg-surface-container border border-outline-variant p-5 rounded-xl">
-          <h3 className="font-headline-md text-headline-md font-bold text-on-surface mb-6">Severity Breakdown</h3>
-          <div className="grid grid-cols-3 gap-4 text-center">
-            <div>
-              <div className="text-critical font-bold text-xl">{criticalCount}</div>
-              <div className="text-[10px] text-on-surface-variant">Critical ({criticalPct}%)</div>
+      {/* Breakdown Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+        <div className="col-span-12 md:col-span-4 glass-panel p-5 rounded-xl flex flex-col justify-between">
+          <h3 className="text-xs font-bold text-text-light uppercase tracking-wider mb-4 border-b border-border-divider pb-2">Severity Breakdown</h3>
+          <div className="grid grid-cols-3 gap-2 text-center my-auto">
+            <div className="bg-near-black/50 p-3 rounded border border-border-divider">
+              <div className="text-vivid-red font-bold text-xl font-serif-display">{criticalCount}</div>
+              <div className="text-[9px] text-text-muted mt-1 uppercase font-bold">Critical ({criticalPct}%)</div>
             </div>
-            <div>
-              <div className="text-warning font-bold text-xl">{highCount}</div>
-              <div className="text-[10px] text-on-surface-variant">High ({highPct}%)</div>
+            <div className="bg-near-black/50 p-3 rounded border border-border-divider">
+              <div className="text-burnt-orange font-bold text-xl font-serif-display">{highCount}</div>
+              <div className="text-[9px] text-text-muted mt-1 uppercase font-bold">High ({highPct}%)</div>
             </div>
-            <div>
-              <div className="text-positive font-bold text-xl">{stableCount}</div>
-              <div className="text-[10px] text-on-surface-variant">Stable ({stablePct}%)</div>
+            <div className="bg-near-black/50 p-3 rounded border border-border-divider">
+              <div className="text-text-light font-bold text-xl font-serif-display">{stableCount}</div>
+              <div className="text-[9px] text-text-muted mt-1 uppercase font-bold">Stable ({stablePct}%)</div>
             </div>
           </div>
         </div>
 
-        <div className="col-span-12 lg:col-span-8 bg-surface-container border border-outline-variant p-5 rounded-xl">
-          <h3 className="font-headline-md text-headline-md font-bold text-on-surface mb-4">Extracted Risk Feed</h3>
+        <div className="col-span-12 md:col-span-8 glass-panel p-5 rounded-xl flex flex-col justify-between">
+          <h3 className="text-xs font-bold text-text-light uppercase tracking-wider mb-4 border-b border-border-divider pb-2">Extracted Risk Feed</h3>
           {loading ? (
-            <p className="text-on-surface-variant text-body-sm">Extracting filing risk factors...</p>
+            <p className="text-text-muted text-xs p-4">Running risk extraction modules...</p>
           ) : risks.length === 0 ? (
-            <p className="text-on-surface-variant text-body-sm">No risks extracted for the current filing.</p>
+            <p className="text-text-muted text-xs p-4">No risk data active. Ingest a document to scan.</p>
           ) : (
-            <div className="divide-y divide-outline-variant/30 max-h-48 overflow-y-auto custom-scrollbar">
+            <div className="divide-y divide-border-divider/30 max-h-48 overflow-y-auto custom-scrollbar pr-2 space-y-1">
               {risks.map((risk, idx) => (
-                <div key={idx} className="py-3 flex justify-between gap-4">
+                <div key={idx} className="py-2.5 flex justify-between items-center gap-4 hover:bg-[#511845]/10 px-2 rounded transition-all">
                   <div>
-                    <p className="text-body-sm font-semibold text-on-surface">{risk.title}</p>
-                    <p className="text-[11px] text-on-surface-variant">{risk.location}</p>
+                    <p className="text-xs font-bold text-text-light leading-tight">{risk.title}</p>
+                    <p className="text-[10px] text-text-muted mt-0.5">{risk.location}</p>
                   </div>
-                  <span className="font-data-mono text-sm text-critical shrink-0">{Number(risk.severity).toFixed(1)}</span>
+                  <span className="font-data-mono text-xs text-vivid-red font-bold">{Number(risk.severity).toFixed(1)}</span>
                 </div>
               ))}
             </div>
@@ -124,34 +138,47 @@ export const RiskAnalysis: React.FC = () => {
         </div>
       </div>
 
+      {/* Critical Findings Detail Matrix */}
       <div className="space-y-4">
-        <h3 className="font-headline-md text-headline-md font-bold px-1 text-on-surface">Critical Findings</h3>
+        <h3 className="text-base font-serif-display font-bold text-text-light px-1">Filing Risk Profiles</h3>
+        
         {loading ? (
-          <div className="flex flex-col items-center justify-center gap-4 py-24 bg-surface-container border border-outline-variant rounded-xl">
-            <div className="w-6 h-6 border-2 border-white/5 border-t-primary rounded-full animate-spin"></div>
-            <p className="text-body-sm text-on-surface-variant">Extracting filing risk factors...</p>
+          <div className="flex flex-col items-center justify-center gap-3 py-24 glass-panel rounded-xl">
+            <RefreshCw size={24} className="animate-spin text-burnt-orange" />
+            <p className="text-xs text-text-muted">Analyzing filing disclosures...</p>
           </div>
         ) : risks.length === 0 ? (
-          <div className="p-8 text-center bg-surface-container border border-outline-variant rounded-xl text-on-surface-variant text-body-sm">
-            No risk vectors loaded. Upload a filing with risk disclosures to proceed.
+          <div className="p-8 text-center glass-panel rounded-xl text-text-muted text-xs">
+            No risk profiles compiled yet. Please load a PDF document.
           </div>
         ) : (
-          risks.map((risk, index) => (
-            <div key={index} className="glass-ai-card p-5 rounded-xl border border-white/5">
-              <div className="flex justify-between items-start mb-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {risks.map((risk, index) => (
+              <div key={index} className="glass-panel p-5 rounded-xl flex flex-col justify-between">
                 <div>
-                  <h4 className="font-headline-md text-headline-md text-on-surface font-bold">{risk.title}</h4>
-                  <span className="text-[9px] font-bold uppercase text-primary">{getSeverityText(risk.severity)}</span>
+                  <div className="flex justify-between items-start gap-4 mb-3 pb-2 border-b border-border-divider/50">
+                    <div>
+                      <h4 className="text-sm font-bold text-text-light leading-tight">{risk.title}</h4>
+                      <span className={`inline-block px-2 py-0.5 border rounded-full text-[8px] font-bold uppercase tracking-wider mt-1.5 ${getSeverityBadgeClass(risk.severity)}`}>
+                        {getSeverityText(risk.severity)}
+                      </span>
+                    </div>
+                    <div className="text-lg font-serif-display text-vivid-red font-bold font-data-mono shrink-0">
+                      {Number(risk.severity).toFixed(1)}
+                    </div>
+                  </div>
+                  <p className="text-xs text-text-muted leading-relaxed mb-4">{risk.description}</p>
                 </div>
-                <p className="font-data-mono font-bold text-critical">{Number(risk.severity).toFixed(1)}</p>
+
+                <blockquote className="bg-near-black/50 p-3.5 rounded border border-border-divider italic text-text-muted text-xs leading-relaxed relative">
+                  "{risk.evidence}"
+                  <div className="mt-2 text-right text-[9px] text-burnt-orange font-bold uppercase tracking-wider font-data-mono">
+                    LOCATION: {risk.location}
+                  </div>
+                </blockquote>
               </div>
-              <p className="text-body-md text-on-surface-variant mb-4">{risk.description}</p>
-              <blockquote className="bg-background-deep/50 p-4 rounded-lg border border-outline-variant/30 italic text-on-surface-variant text-body-md">
-                "{risk.evidence}"
-                <div className="mt-2 text-right text-[10px] text-primary uppercase">LOCATION: {risk.location}</div>
-              </blockquote>
-            </div>
-          ))
+            ))}
+          </div>
         )}
       </div>
     </div>
