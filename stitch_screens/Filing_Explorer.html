@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container-highest": "#353534",
+                    "critical": "#EF4444",
+                    "on-surface": "#e5e2e1",
+                    "surface": "#131313",
+                    "surface-graphite": "#1E1E1E",
+                    "background-deep": "#0A0A0A",
+                    "inverse-primary": "#005ac2",
+                    "primary-fixed-dim": "#adc6ff",
+                    "on-primary-container": "#00285d",
+                    "surface-tint": "#adc6ff",
+                    "surface-container-high": "#2a2a2a",
+                    "primary": "#adc6ff",
+                    "inverse-on-surface": "#313030",
+                    "surface-container": "#201f1f",
+                    "secondary-fixed": "#e9ddff",
+                    "error-container": "#93000a",
+                    "on-primary-fixed": "#001a42",
+                    "surface-container-lowest": "#0e0e0e",
+                    "primary-fixed": "#d8e2ff",
+                    "on-primary": "#002e6a",
+                    "outline": "#8c909f",
+                    "outline-variant": "#424754",
+                    "on-error": "#690005",
+                    "on-surface-variant": "#c2c6d6",
+                    "secondary": "#d0bcff",
+                    "tertiary": "#ffb786",
+                    "on-secondary": "#3c0091",
+                    "on-background": "#e5e2e1",
+                    "on-tertiary-container": "#461f00",
+                    "tertiary-fixed": "#ffdcc6",
+                    "text-muted": "#A1A1AA",
+                    "on-tertiary-fixed": "#311400",
+                    "secondary-container": "#571bc1",
+                    "error": "#ffb4ab",
+                    "surface-variant": "#353534",
+                    "surface-container-low": "#1c1b1b",
+                    "positive": "#10B981",
+                    "on-primary-fixed-variant": "#004395",
+                    "secondary-fixed-dim": "#d0bcff",
+                    "surface-bright": "#393939",
+                    "background": "#131313",
+                    "on-tertiary-fixed-variant": "#723600",
+                    "on-secondary-fixed": "#23005c",
+                    "warning": "#F59E0B",
+                    "surface-dim": "#131313",
+                    "on-secondary-fixed-variant": "#5516be",
+                    "on-secondary-container": "#c4abff",
+                    "tertiary-container": "#df7412",
+                    "on-error-container": "#ffdad6",
+                    "inverse-surface": "#e5e2e1",
+                    "primary-container": "#4d8eff",
+                    "tertiary-fixed-dim": "#ffb786",
+                    "on-tertiary": "#502400"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "stack-compact": "4px",
+                    "grid-margin": "24px",
+                    "gutter": "12px",
+                    "stack-default": "8px",
+                    "section-gap": "32px"
+            },
+            "fontFamily": {
+                    "label-caps": ["Inter"],
+                    "body-md": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "body-sm": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "data-mono": ["JetBrains Mono"]
+            },
+            "fontSize": {
+                    "label-caps": ["10px", {"lineHeight": "12px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "headline-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                    "body-sm": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                    "headline-md": ["18px", {"lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "data-mono": ["12px", {"lineHeight": "16px", "letterSpacing": "-0.01em", "fontWeight": "500"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .glass-ai {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            border-left: 2px solid #df7412;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #2A2A2A;
+            border-radius: 10px;
+        }
+        .interactive-tag {
+            background: rgba(173, 198, 255, 0.1);
+            border-bottom: 1px dashed #adc6ff;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .interactive-tag:hover {
+            background: rgba(173, 198, 255, 0.2);
+            border-bottom: 1px solid #adc6ff;
+        }
+        .risk-tag {
+            background: rgba(239, 68, 68, 0.1);
+            border-bottom: 1px dashed #EF4444;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="bg-background-deep text-on-surface font-body-md selection:bg-primary/30">
+<!-- Sidebar (SideNavBar Anchor) -->
+<aside class="h-screen w-64 fixed left-0 top-0 flex flex-col border-r border-outline-variant bg-surface-container-low z-50">
+<div class="flex flex-col h-full p-stack-default">
+<div class="px-4 py-6">
+<div class="font-headline-md text-headline-md font-bold text-primary">FinSight AI</div>
+<div class="font-label-caps text-label-caps text-on-surface-variant opacity-70">Enterprise Intelligence</div>
+</div>
+<nav class="flex-1 space-y-1 px-2 overflow-y-auto custom-scrollbar">
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-highest transition-colors duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-md text-body-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-highest transition-colors duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined">description</span>
+<span class="font-body-md text-body-md">Filings</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 bg-secondary-container text-on-secondary-container rounded-lg active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined">search_insights</span>
+<span class="font-body-md text-body-md">Filing Explorer</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-highest transition-colors duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined">warning</span>
+<span class="font-body-md text-body-md">Risk Analysis</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-highest transition-colors duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined">psychology</span>
+<span class="font-body-md text-body-md">AI Assistant</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-highest transition-colors duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-body-md text-body-md">Competitor Analysis</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-highest transition-colors duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined">insert_chart</span>
+<span class="font-body-md text-body-md">Reports</span>
+</a>
+<div class="pt-4 pb-2 px-3">
+<div class="h-px bg-outline-variant w-full"></div>
+</div>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-highest transition-colors duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined">security</span>
+<span class="font-body-md text-body-md">Guardrails</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-highest transition-colors duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-md text-body-md">Settings</span>
+</a>
+</nav>
+<div class="p-4">
+<button class="w-full bg-primary text-on-primary py-2 rounded-lg font-body-md hover:opacity-90 transition-opacity">
+                    Upgrade Plan
+                </button>
+</div>
+</div>
+</aside>
+<!-- Top Navigation (TopNavBar Anchor) -->
+<header class="h-16 fixed top-0 right-0 z-40 flex items-center justify-between px-grid-margin w-[calc(100%-16rem)] ml-64 border-b border-outline-variant bg-surface/80 backdrop-blur-md">
+<div class="flex items-center flex-1 max-w-2xl gap-4">
+<div class="relative flex-1 group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
+<input class="w-full bg-background-deep border border-outline-variant rounded-full py-1.5 pl-10 pr-4 text-body-md focus:outline-none focus:ring-1 focus:ring-primary" placeholder="Search across filings..." type="text"/>
+</div>
+<div class="flex bg-surface-container-high rounded-lg p-1">
+<button class="px-3 py-1 text-label-caps font-label-caps bg-surface-container-highest text-primary rounded-md shadow-sm">Keyword</button>
+<button class="px-3 py-1 text-label-caps font-label-caps text-on-surface-variant hover:text-on-surface transition-colors">Semantic</button>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="flex items-center gap-2 px-4 py-1.5 bg-surface-container-highest hover:bg-surface-container text-on-surface font-body-md rounded-lg transition-colors border border-outline-variant">
+<span class="material-symbols-outlined text-sm">upload_file</span>
+                Upload Filing
+            </button>
+<div class="flex items-center gap-2 text-on-surface-variant">
+<button class="p-2 hover:bg-surface-container-highest rounded-full transition-colors"><span class="material-symbols-outlined">notifications</span></button>
+<button class="p-2 hover:bg-surface-container-highest rounded-full transition-colors"><span class="material-symbols-outlined">account_circle</span></button>
+</div>
+</div>
+</header>
+<!-- Main Workspace -->
+<main class="ml-64 pt-16 h-screen flex overflow-hidden">
+<!-- Left: Section Tree (3-column layout) -->
+<section class="w-72 border-r border-outline-variant bg-surface-container-lowest flex flex-col">
+<div class="p-4 border-b border-outline-variant flex items-center justify-between">
+<span class="font-label-caps text-label-caps text-on-surface-variant">Document Navigator</span>
+<span class="material-symbols-outlined text-on-surface-variant text-base cursor-pointer">filter_list</span>
+</div>
+<div class="flex-1 overflow-y-auto custom-scrollbar p-2 space-y-1">
+<div class="group">
+<div class="flex items-center gap-2 px-3 py-2 text-on-surface-variant hover:bg-surface-container rounded cursor-pointer">
+<span class="material-symbols-outlined text-sm">expand_more</span>
+<span class="text-body-sm font-medium">Part I</span>
+</div>
+<div class="ml-6 space-y-1">
+<div class="px-3 py-1.5 text-body-sm text-on-surface-variant hover:text-on-surface rounded hover:bg-surface-container cursor-pointer">Item 1. Business</div>
+<div class="px-3 py-1.5 text-body-sm bg-primary/10 text-primary border-l-2 border-primary rounded-r cursor-pointer font-medium">Item 1A. Risk Factors</div>
+<div class="px-3 py-1.5 text-body-sm text-on-surface-variant hover:text-on-surface rounded hover:bg-surface-container cursor-pointer">Item 1B. Unresolved Comments</div>
+<div class="px-3 py-1.5 text-body-sm text-on-surface-variant hover:text-on-surface rounded hover:bg-surface-container cursor-pointer">Item 2. Properties</div>
+</div>
+</div>
+<div class="group">
+<div class="flex items-center gap-2 px-3 py-2 text-on-surface-variant hover:bg-surface-container rounded cursor-pointer">
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+<span class="text-body-sm font-medium">Part II</span>
+</div>
+</div>
+<div class="group">
+<div class="flex items-center gap-2 px-3 py-2 text-on-surface-variant hover:bg-surface-container rounded cursor-pointer">
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+<span class="text-body-sm font-medium">Part III</span>
+</div>
+</div>
+</div>
+<div class="p-4 bg-surface-container-low border-t border-outline-variant">
+<div class="flex items-center justify-between mb-2">
+<span class="text-label-caps font-label-caps text-on-surface-variant">Quick Filters</span>
+<span class="text-[10px] text-primary hover:underline cursor-pointer">Reset</span>
+</div>
+<div class="flex flex-wrap gap-2">
+<span class="px-2 py-0.5 bg-surface-container-high rounded text-[10px] text-on-surface-variant border border-outline-variant cursor-pointer hover:border-primary">Supply Chain</span>
+<span class="px-2 py-0.5 bg-surface-container-high rounded text-[10px] text-on-surface-variant border border-outline-variant cursor-pointer hover:border-primary">Regulatory</span>
+<span class="px-2 py-0.5 bg-surface-container-high rounded text-[10px] text-on-surface-variant border border-outline-variant cursor-pointer hover:border-primary">Geopolitical</span>
+</div>
+</div>
+</section>
+<!-- Center: Document Content -->
+<section class="flex-1 overflow-y-auto custom-scrollbar bg-background-deep relative">
+<div class="max-w-3xl mx-auto px-12 py-16">
+<div class="mb-12">
+<div class="text-label-caps font-label-caps text-primary tracking-widest mb-2">FORM 10-K | FISCAL YEAR 2023</div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface mb-4">Item 1A. Risk Factors</h1>
+<div class="h-1 w-24 bg-primary rounded-full mb-8"></div>
+</div>
+<div class="space-y-8 text-on-surface leading-relaxed text-body-md opacity-90">
+<p>
+                        Our business, financial condition, and results of operations could be adversely affected by any of the following risks. The risks described below are not the only ones we face. Additional risks and uncertainties not currently known to us or that we currently deem to be immaterial may also materially and adversely affect our business.
+                    </p>
+<div>
+<h2 class="font-headline-md text-headline-md text-on-surface mb-3 flex items-center gap-2">
+<span class="w-1.5 h-1.5 bg-tertiary rounded-full"></span>
+                            Strategic Supply Chain Vulnerabilities
+                        </h2>
+<p class="mb-4">
+                            We rely on a limited number of specialized suppliers for certain critical components and manufacturing services. Specifically, our dependence on <span class="interactive-tag px-1 rounded">TSMC</span> for advanced semiconductor fabrication and <span class="interactive-tag px-1 rounded">ASML</span> for lithography systems creates significant <span class="risk-tag px-1 rounded">concentration risk</span>. Any disruption in the operations of these partners, whether due to geopolitical tensions in the Taiwan Strait or trade restrictions, could severely impact our production capacity.
+                        </p>
+</div>
+<div class="p-6 bg-surface-container rounded-xl border border-outline-variant border-l-4 border-l-critical">
+<div class="flex items-center gap-2 mb-3">
+<span class="material-symbols-outlined text-critical">report</span>
+<span class="font-headline-md text-headline-md text-critical">Material Risk Detected</span>
+</div>
+<p class="italic text-on-surface-variant">
+                            "The increasing complexity of <span class="interactive-tag px-1 rounded">advanced packaging</span> technologies requires closer collaboration with third-party foundries. Failure to secure priority access to these technologies may lead to product launch delays and loss of market share to competitors."
+                        </p>
+</div>
+<p>
+                        Furthermore, the ongoing global shift toward sovereign semiconductor manufacturing capabilities has led to increased regulatory scrutiny. Changes in export control regulations, particularly regarding high-performance computing (HPC) chips, may limit our ability to service clients in specific jurisdictions, potentially impacting our long-term revenue projections in the APAC region.
+                    </p>
+<div class="py-12 flex justify-center opacity-50">
+<div class="h-px w-32 bg-outline-variant"></div>
+</div>
+</div>
+</div>
+<!-- Context Menu (Simulated) -->
+<div class="hidden absolute glass-ai p-4 rounded-xl w-64 shadow-2xl z-50" id="entity-popup">
+<div class="flex items-center justify-between mb-3">
+<span class="text-label-caps font-label-caps text-primary">ENTITY PROFILE</span>
+<span class="material-symbols-outlined text-on-surface-variant text-sm cursor-pointer hover:text-on-surface">close</span>
+</div>
+<div class="font-headline-md text-headline-md mb-1">TSMC</div>
+<div class="text-body-sm text-on-surface-variant mb-4">Taiwan Semiconductor Manufacturing Company</div>
+<div class="space-y-2">
+<div class="flex items-center justify-between text-body-sm">
+<span class="text-on-surface-variant">Market Exposure:</span>
+<span class="text-positive font-medium">Critical</span>
+</div>
+<div class="flex items-center justify-between text-body-sm">
+<span class="text-on-surface-variant">Sentiment Impact:</span>
+<span class="text-warning font-medium">Neutral</span>
+</div>
+</div>
+<button class="w-full mt-4 bg-primary/20 hover:bg-primary/30 text-primary py-2 rounded font-body-sm transition-colors">Analyze Network</button>
+</div>
+</section>
+<!-- Right: AI Insights -->
+<section class="w-80 border-l border-outline-variant bg-surface-container-low flex flex-col p-4 custom-scrollbar overflow-y-auto">
+<div class="flex items-center gap-2 mb-6">
+<div class="w-8 h-8 rounded-lg bg-tertiary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-on-tertiary-container" style="font-variation-settings: 'FILL' 1;">psychology</span>
+</div>
+<h3 class="font-headline-md text-headline-md">AI Insights</h3>
+</div>
+<div class="glass-ai p-4 rounded-xl mb-6 border-l-4 border-l-tertiary">
+<div class="text-label-caps font-label-caps text-tertiary mb-2">SECTION SUMMARY</div>
+<p class="text-body-sm text-on-surface leading-relaxed">
+                    This section highlights a pivot toward <span class="text-tertiary font-medium">geopolitical supply chain risk</span>. Compared to the 2022 filing, the company has increased mention of 'Foundry Dependency' by 40%.
+                </p>
+</div>
+<div class="space-y-4 mb-8">
+<div class="text-label-caps font-label-caps text-on-surface-variant opacity-60">KEY TAKEAWAYS</div>
+<div class="flex gap-3 group">
+<div class="mt-1"><span class="material-symbols-outlined text-warning text-sm">trending_up</span></div>
+<div>
+<div class="text-body-sm font-semibold">Packaging Bottlenecks</div>
+<div class="text-[11px] text-on-surface-variant">Increasing dependence on advanced packaging technologies as a primary growth blocker.</div>
+</div>
+</div>
+<div class="flex gap-3 group">
+<div class="mt-1"><span class="material-symbols-outlined text-critical text-sm">language</span></div>
+<div>
+<div class="text-body-sm font-semibold">APAC Export Controls</div>
+<div class="text-[11px] text-on-surface-variant">New regulatory headwinds identified regarding high-end GPU distribution.</div>
+</div>
+</div>
+<div class="flex gap-3 group">
+<div class="mt-1"><span class="material-symbols-outlined text-positive text-sm">shield</span></div>
+<div>
+<div class="text-body-sm font-semibold">Sovereign Manufacturing</div>
+<div class="text-[11px] text-on-surface-variant">Strategic shift towards US-based foundries noted as a mitigation factor.</div>
+</div>
+</div>
+</div>
+<div class="mt-auto">
+<div class="p-4 bg-surface-container-high rounded-xl border border-outline-variant">
+<div class="text-label-caps font-label-caps text-on-surface-variant mb-3">RISK SCORECARD</div>
+<div class="space-y-3">
+<div>
+<div class="flex justify-between text-[11px] mb-1">
+<span class="text-on-surface-variant">Operational</span>
+<span class="text-on-surface font-data-mono">82/100</span>
+</div>
+<div class="h-1.5 w-full bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-critical w-[82%]"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between text-[11px] mb-1">
+<span class="text-on-surface-variant">Geopolitical</span>
+<span class="text-on-surface font-data-mono">64/100</span>
+</div>
+<div class="h-1.5 w-full bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-warning w-[64%]"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between text-[11px] mb-1">
+<span class="text-on-surface-variant">Financial</span>
+<span class="text-on-surface font-data-mono">28/100</span>
+</div>
+<div class="h-1.5 w-full bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-positive w-[28%]"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<script>
+        // Simple micro-interaction for highlighted entities
+        document.querySelectorAll('.interactive-tag').forEach(tag => {
+            tag.addEventListener('click', (e) => {
+                const popup = document.getElementById('entity-popup');
+                const rect = tag.getBoundingClientRect();
+                
+                popup.style.left = `${rect.left - 50}px`;
+                popup.style.top = `${rect.bottom + 10}px`;
+                popup.classList.remove('hidden');
+                
+                // Add entity name to popup
+                popup.querySelector('.font-headline-md').innerText = tag.innerText;
+                
+                e.stopPropagation();
+            });
+        });
+
+        // Close popup when clicking elsewhere
+        document.addEventListener('click', () => {
+            document.getElementById('entity-popup').classList.add('hidden');
+        });
+
+        // Hover animation for tree items
+        document.querySelectorAll('.group > div').forEach(item => {
+            item.addEventListener('mouseenter', () => {
+                item.classList.add('translate-x-1');
+            });
+            item.addEventListener('mouseleave', () => {
+                item.classList.remove('translate-x-1');
+            });
+        });
+    </script>
+</body></html>

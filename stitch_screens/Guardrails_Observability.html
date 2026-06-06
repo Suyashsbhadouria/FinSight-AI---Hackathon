@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Guardrails &amp; Observability | FinSight AI</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .ai-insight-card {
+            border-left: 2px solid #df7412; /* Using tertiary-container as the 'Royal Purple' equivalent from theme */
+            background: linear-gradient(90deg, rgba(223, 116, 18, 0.1) 0%, rgba(30, 30, 30, 1) 100%);
+        }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #0A0A0A; }
+        ::-webkit-scrollbar-thumb { background: #2A2A2A; border-radius: 10px; }
+    </style>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container-highest": "#353534",
+                    "critical": "#EF4444",
+                    "on-surface": "#e5e2e1",
+                    "surface": "#131313",
+                    "surface-graphite": "#1E1E1E",
+                    "background-deep": "#0A0A0A",
+                    "inverse-primary": "#005ac2",
+                    "primary-fixed-dim": "#adc6ff",
+                    "on-primary-container": "#00285d",
+                    "surface-tint": "#adc6ff",
+                    "surface-container-high": "#2a2a2a",
+                    "primary": "#adc6ff",
+                    "inverse-on-surface": "#313030",
+                    "surface-container": "#201f1f",
+                    "secondary-fixed": "#e9ddff",
+                    "error-container": "#93000a",
+                    "on-primary-fixed": "#001a42",
+                    "surface-container-lowest": "#0e0e0e",
+                    "primary-fixed": "#d8e2ff",
+                    "on-primary": "#002e6a",
+                    "outline": "#8c909f",
+                    "outline-variant": "#424754",
+                    "on-error": "#690005",
+                    "on-surface-variant": "#c2c6d6",
+                    "secondary": "#d0bcff",
+                    "tertiary": "#ffb786",
+                    "on-secondary": "#3c0091",
+                    "on-background": "#e5e2e1",
+                    "on-tertiary-container": "#461f00",
+                    "tertiary-fixed": "#ffdcc6",
+                    "text-muted": "#A1A1AA",
+                    "on-tertiary-fixed": "#311400",
+                    "secondary-container": "#571bc1",
+                    "error": "#ffb4ab",
+                    "surface-variant": "#353534",
+                    "surface-container-low": "#1c1b1b",
+                    "positive": "#10B981",
+                    "on-primary-fixed-variant": "#004395",
+                    "secondary-fixed-dim": "#d0bcff",
+                    "surface-bright": "#393939",
+                    "background": "#131313",
+                    "on-tertiary-fixed-variant": "#723600",
+                    "on-secondary-fixed": "#23005c",
+                    "warning": "#F59E0B",
+                    "surface-dim": "#131313",
+                    "on-secondary-fixed-variant": "#5516be",
+                    "on-secondary-container": "#c4abff",
+                    "tertiary-container": "#df7412",
+                    "on-error-container": "#ffdad6",
+                    "inverse-surface": "#e5e2e1",
+                    "primary-container": "#4d8eff",
+                    "tertiary-fixed-dim": "#ffb786",
+                    "on-tertiary": "#502400"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "stack-compact": "4px",
+                    "grid-margin": "24px",
+                    "gutter": "12px",
+                    "stack-default": "8px",
+                    "section-gap": "32px"
+            },
+            "fontFamily": {
+                    "label-caps": ["Inter"],
+                    "body-md": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "body-sm": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "data-mono": ["JetBrains Mono"]
+            },
+            "fontSize": {
+                    "label-caps": ["10px", {"lineHeight": "12px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "headline-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                    "body-sm": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                    "headline-md": ["18px", {"lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "data-mono": ["12px", {"lineHeight": "16px", "letterSpacing": "-0.01em", "fontWeight": "500"}]
+            }
+          },
+        },
+      }
+    </script>
+</head>
+<body class="bg-background-deep text-on-surface font-body-md overflow-hidden h-screen">
+<!-- SideNavBar Anchor -->
+<aside class="h-screen w-64 fixed left-0 top-0 flex flex-col border-r border-outline-variant bg-surface-container-low z-50">
+<div class="flex flex-col h-full p-stack-default">
+<div class="flex items-center gap-3 px-4 py-6">
+<div class="w-8 h-8 bg-primary rounded flex items-center justify-center text-on-primary font-bold">FS</div>
+<div>
+<h1 class="font-headline-md text-headline-md font-bold text-primary">FinSight AI</h1>
+<p class="text-[10px] uppercase tracking-widest text-on-surface-variant">Enterprise Intelligence</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1 mt-4">
+<!-- Nav Items Mapping -->
+<a class="flex items-center gap-3 px-4 py-2.5 text-on-surface-variant hover:bg-surface-container-highest transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2.5 text-on-surface-variant hover:bg-surface-container-highest transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">description</span>
+<span class="font-body-md">Filings</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2.5 text-on-surface-variant hover:bg-surface-container-highest transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">search_insights</span>
+<span class="font-body-md">Filing Explorer</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2.5 text-on-surface-variant hover:bg-surface-container-highest transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">warning</span>
+<span class="font-body-md">Risk Analysis</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2.5 text-on-surface-variant hover:bg-surface-container-highest transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">psychology</span>
+<span class="font-body-md">AI Assistant</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2.5 text-on-surface-variant hover:bg-surface-container-highest transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-body-md">Competitor Analysis</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2.5 text-on-surface-variant hover:bg-surface-container-highest transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">insert_chart</span>
+<span class="font-body-md">Reports</span>
+</a>
+<!-- Active Item -->
+<a class="flex items-center gap-3 px-4 py-2.5 bg-secondary-container text-on-secondary-container rounded-lg active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined">security</span>
+<span class="font-body-md">Guardrails &amp; Observability</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2.5 text-on-surface-variant hover:bg-surface-container-highest transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-md">Settings</span>
+</a>
+</nav>
+<div class="mt-auto p-4 border-t border-outline-variant">
+<button class="w-full py-2 bg-primary text-on-primary font-bold rounded hover:opacity-90 transition-opacity">Upgrade Plan</button>
+</div>
+</div>
+</aside>
+<!-- TopNavBar Anchor -->
+<header class="h-16 fixed top-0 right-0 z-40 border-b border-outline-variant bg-surface/80 backdrop-blur-md flex items-center justify-between px-grid-margin w-[calc(100%-16rem)] ml-64">
+<div class="flex items-center gap-6 w-full max-w-2xl">
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
+<input class="w-full bg-background-deep border border-outline-variant rounded-lg py-1.5 pl-10 pr-4 text-sm focus:ring-1 focus:ring-primary focus:outline-none placeholder:text-outline" placeholder="Search system logs or telemetry data..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="px-4 py-1.5 bg-primary text-on-primary text-sm font-bold rounded flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">upload_file</span>
+                Upload Filing
+            </button>
+<div class="flex items-center gap-3 text-on-surface-variant border-l border-outline-variant pl-4">
+<span class="material-symbols-outlined cursor-pointer hover:text-primary transition-colors">notifications</span>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant">
+<img alt="Analyst Profile" class="w-full h-full object-cover" data-alt="A professional headshot of a financial analyst in a modern office, wearing a sharp charcoal suit. The lighting is crisp and cinematic with a cool-toned corporate aesthetic. The background features blurred glass partitions and architectural lines typical of a high-end fintech headquarters. The overall mood is authoritative, precise, and sophisticated." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDnRsL9fS0pkrYquR58EjxWS6ITbyrpGu7CJjb4GqDGxIBGb7quXxEkByeu-_V33G8PaghURWzYgcZEEstHSKozxlozPU0GXdqOfrQheE9ayAozIx7CuZvvjRBrKI56zEMSIN6DW98M8PRYlSBuNgRQ1sht2Um4qZYekZRJ4CkD3eLu873p7Tt9wkbPOR5ZDjA33Td34sZ42yjIHO01j0mXfM3nFoWhOkhPAOoIin21Y2ISyRh3lX2jPWSmz1l6UQWumJPSSsMo-Imm"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-64 mt-16 p-grid-margin h-[calc(100vh-4rem)] overflow-y-auto bg-background-deep">
+<div class="max-w-[1600px] mx-auto space-y-gutter">
+<!-- Page Header -->
+<div class="flex justify-between items-end mb-6">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-primary">Guardrails &amp; Observability</h2>
+<p class="text-on-surface-variant">Real-time LLM safety metrics and system telemetry for FinSight AI.</p>
+</div>
+<div class="flex gap-2">
+<div class="flex items-center gap-2 bg-surface-container px-3 py-1.5 rounded border border-outline-variant text-body-sm">
+<span class="w-2 h-2 rounded-full bg-positive animate-pulse"></span>
+                        System Operational
+                    </div>
+<div class="flex items-center gap-2 bg-surface-container px-3 py-1.5 rounded border border-outline-variant text-body-sm font-data-mono">
+                        Last sync: 12:44:02 UTC
+                    </div>
+</div>
+</div>
+<!-- Bento Grid - Level 1: Security Metrics & Trends -->
+<div class="grid grid-cols-12 gap-gutter">
+<!-- Prompt Injections Blocked -->
+<div class="col-span-12 md:col-span-3 glass-card p-4 rounded-lg flex flex-col justify-between h-32">
+<div class="flex justify-between items-start">
+<span class="font-label-caps text-label-caps text-on-surface-variant">PROMPT INJECTIONS BLOCKED</span>
+<span class="material-symbols-outlined text-critical">shield_lock</span>
+</div>
+<div>
+<div class="font-headline-lg text-headline-lg text-critical">12</div>
+<div class="text-[10px] text-positive">+2 since last hour</div>
+</div>
+</div>
+<!-- PII Redacted -->
+<div class="col-span-12 md:col-span-3 glass-card p-4 rounded-lg flex flex-col justify-between h-32">
+<div class="flex justify-between items-start">
+<span class="font-label-caps text-label-caps text-on-surface-variant">PII REDACTED</span>
+<span class="material-symbols-outlined text-primary">visibility_off</span>
+</div>
+<div>
+<div class="font-headline-lg text-headline-lg text-on-surface">450+</div>
+<div class="text-[10px] text-on-surface-variant">Social security numbers, Bank IDs</div>
+</div>
+</div>
+<!-- Toxicity Level -->
+<div class="col-span-12 md:col-span-3 glass-card p-4 rounded-lg flex flex-col justify-between h-32">
+<div class="flex justify-between items-start">
+<span class="font-label-caps text-label-caps text-on-surface-variant">TOXICITY LEVEL</span>
+<span class="material-symbols-outlined text-warning">warning</span>
+</div>
+<div>
+<div class="font-headline-lg text-headline-lg text-on-surface font-data-mono">0.01%</div>
+<div class="text-[10px] text-positive">Within safety threshold</div>
+</div>
+</div>
+<!-- Retrieval Accuracy -->
+<div class="col-span-12 md:col-span-3 glass-card p-4 rounded-lg flex flex-col justify-between h-32 border-l-2 border-primary">
+<div class="flex justify-between items-start">
+<span class="font-label-caps text-label-caps text-on-surface-variant">RAG ACCURACY</span>
+<span class="material-symbols-outlined text-primary">fact_check</span>
+</div>
+<div>
+<div class="font-headline-lg text-headline-lg text-primary font-data-mono">98.4%</div>
+<div class="text-[10px] text-on-surface-variant">Top-k retrieval relevance</div>
+</div>
+</div>
+<!-- Guardrail Trends Chart -->
+<div class="col-span-12 md:col-span-8 glass-card p-6 rounded-lg min-h-[300px] flex flex-col">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-headline-md text-headline-md">Security Event Frequency</h3>
+<div class="flex gap-4">
+<span class="flex items-center gap-2 text-label-caps text-[10px]"><span class="w-2 h-2 rounded-full bg-critical"></span>INJECTIONS</span>
+<span class="flex items-center gap-2 text-label-caps text-[10px]"><span class="w-2 h-2 rounded-full bg-warning"></span>HALLUCINATIONS</span>
+</div>
+</div>
+<div class="flex-1 w-full relative group">
+<!-- Simulated Chart Grid -->
+<div class="absolute inset-0 grid grid-cols-6 border-b border-l border-outline-variant">
+<div class="border-r border-outline-variant/20 border-dashed"></div>
+<div class="border-r border-outline-variant/20 border-dashed"></div>
+<div class="border-r border-outline-variant/20 border-dashed"></div>
+<div class="border-r border-outline-variant/20 border-dashed"></div>
+<div class="border-r border-outline-variant/20 border-dashed"></div>
+</div>
+<!-- SVG Line Chart Path -->
+<svg class="absolute inset-0 h-full w-full preserve-3d" viewbox="0 0 1000 200">
+<path d="M0,150 Q50,140 100,160 T200,120 T300,140 T400,90 T500,110 T600,60 T700,80 T800,40 T900,60 T1000,30" fill="none" stroke="#EF4444" stroke-width="2"></path>
+<path d="M0,180 Q100,170 200,175 T400,165 T600,172 T800,168 T1000,160" fill="none" stroke="#F59E0B" stroke-width="2"></path>
+</svg>
+<!-- Tooltip indicator -->
+<div class="absolute top-[30px] left-[900px] w-px h-[calc(100%-30px)] bg-primary group-hover:block hidden"></div>
+</div>
+<div class="mt-4 flex justify-between text-[10px] text-outline font-data-mono uppercase">
+<span>30 Days Ago</span>
+<span>15 Days Ago</span>
+<span>Today</span>
+</div>
+</div>
+<!-- Usage Analytics: Token Consumption -->
+<div class="col-span-12 md:col-span-4 glass-card p-6 rounded-lg flex flex-col">
+<h3 class="font-headline-md text-headline-md mb-6">Token Consumption</h3>
+<div class="space-y-6 flex-1 flex flex-col justify-center">
+<div class="space-y-2">
+<div class="flex justify-between text-body-sm mb-1">
+<span class="text-on-surface-variant font-data-mono">GPT-4 (Fin-Tuned)</span>
+<span class="text-on-surface">6.2M</span>
+</div>
+<div class="w-full bg-surface-container-high h-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full rounded-full" style="width: 78%"></div>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between text-body-sm mb-1">
+<span class="text-on-surface-variant font-data-mono">GPT-3.5 (Turbo)</span>
+<span class="text-on-surface">1.4M</span>
+</div>
+<div class="w-full bg-surface-container-high h-2 rounded-full overflow-hidden">
+<div class="bg-outline h-full rounded-full" style="width: 22%"></div>
+</div>
+</div>
+</div>
+<div class="mt-8 p-3 rounded bg-surface-container-low border border-outline-variant">
+<div class="text-[10px] font-label-caps text-on-surface-variant mb-1">COST ESTIMATE (MTD)</div>
+<div class="text-headline-md text-on-surface font-data-mono">$12,402.55</div>
+</div>
+</div>
+</div>
+<!-- Bento Grid - Level 2: Distribution & Citations -->
+<div class="grid grid-cols-12 gap-gutter">
+<!-- Tool Call Distribution -->
+<div class="col-span-12 md:col-span-4 glass-card p-6 rounded-lg">
+<h3 class="font-headline-md text-headline-md mb-6">Tool Call Distribution</h3>
+<div class="relative h-48 flex items-center justify-center">
+<!-- Simple CSS Donut -->
+<div class="relative w-36 h-36 rounded-full border-[16px] border-primary-container" style="border-right-color: #571bc1;">
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="text-headline-md font-data-mono">8.2k</span>
+<span class="text-[10px] text-outline">TOTAL</span>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4 mt-6">
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 bg-primary-container rounded-sm"></div>
+<div class="flex flex-col">
+<span class="text-[10px] font-label-caps text-on-surface-variant">RAG ENGINE</span>
+<span class="text-body-sm font-data-mono">68%</span>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 bg-secondary-container rounded-sm"></div>
+<div class="flex flex-col">
+<span class="text-[10px] font-label-caps text-on-surface-variant">SEC SEARCH</span>
+<span class="text-body-sm font-data-mono">32%</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Citation Coverage Table -->
+<div class="col-span-12 md:col-span-5 glass-card p-6 rounded-lg flex flex-col overflow-hidden">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-headline-md text-headline-md">Citation Coverage</h3>
+<span class="text-[10px] font-label-caps px-2 py-0.5 bg-positive/10 text-positive rounded border border-positive/20">HEALTHY</span>
+</div>
+<div class="flex-1 overflow-x-auto">
+<table class="w-full text-left text-body-sm">
+<thead>
+<tr class="text-on-surface-variant font-label-caps text-[10px] border-b border-outline-variant">
+<th class="pb-3">SOURCE CATEGORY</th>
+<th class="pb-3">AVG. CITATIONS</th>
+<th class="pb-3 text-right">VERIFIABILITY</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<tr class="hover:bg-surface-container-highest transition-colors">
+<td class="py-3 font-medium">10-K Annual Reports</td>
+<td class="py-3 font-data-mono">14.2 / response</td>
+<td class="py-3 text-right text-positive">99.2%</td>
+</tr>
+<tr class="hover:bg-surface-container-highest transition-colors">
+<td class="py-3 font-medium">Earnings Transcripts</td>
+<td class="py-3 font-data-mono">8.5 / response</td>
+<td class="py-3 text-right text-positive">94.1%</td>
+</tr>
+<tr class="hover:bg-surface-container-highest transition-colors">
+<td class="py-3 font-medium">8-K Current Events</td>
+<td class="py-3 font-data-mono">3.1 / response</td>
+<td class="py-3 text-right text-warning">82.5%</td>
+</tr>
+<tr class="hover:bg-surface-container-highest transition-colors">
+<td class="py-3 font-medium">Risk Factors</td>
+<td class="py-3 font-data-mono">11.0 / response</td>
+<td class="py-3 text-right text-positive">96.8%</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- AI Insights Section -->
+<div class="col-span-12 md:col-span-3 space-y-gutter">
+<div class="ai-insight-card p-4 rounded-lg glass-card flex flex-col gap-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-tertiary-container text-sm">psychology</span>
+<span class="font-label-caps text-[10px] text-tertiary">OBSERVABILITY INSIGHT</span>
+</div>
+<p class="text-body-sm text-on-surface leading-snug">Spike in 8-K retrieval latency detected in Asia-Pacific region. Auto-failover to secondary cluster initiated successfully.</p>
+<button class="mt-2 text-[10px] font-bold text-tertiary flex items-center gap-1 hover:underline">
+                            VIEW LOGS <span class="material-symbols-outlined text-[12px]">chevron_right</span>
+</button>
+</div>
+<div class="glass-card p-4 rounded-lg flex flex-col gap-3">
+<h4 class="font-label-caps text-[10px] text-on-surface-variant">LATEST SECURITY ALERT</h4>
+<div class="flex gap-3">
+<div class="w-1 bg-critical rounded-full"></div>
+<div>
+<div class="text-body-sm font-bold text-critical">DAN Jailbreak Attempt</div>
+<div class="text-[10px] text-outline">User ID: node_9410 - Blocked</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Background Pattern -->
+<div class="fixed inset-0 pointer-events-none z-[-1] opacity-20">
+<div class="absolute inset-0" style="background-image: radial-gradient(#2A2A2A 1px, transparent 1px); background-size: 24px 24px;"></div>
+</div>
+<script>
+        // Simple Micro-interaction: Chart hover effect
+        document.querySelector('main').addEventListener('mousemove', (e) => {
+            const tooltip = document.querySelector('.group .bg-primary');
+            if (tooltip && e.target.closest('.group')) {
+                const rect = e.target.closest('.group').getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                tooltip.style.left = `${x}px`;
+            }
+        });
+
+        // Real-time clock update for telemetry feeling
+        function updateClock() {
+            const clockEl = document.querySelector('.font-data-mono:last-child');
+            if (clockEl) {
+                const now = new Date();
+                const timeStr = now.toISOString().split('T')[1].split('.')[0];
+                clockEl.textContent = `Last sync: ${timeStr} UTC`;
+            }
+        }
+        setInterval(updateClock, 1000);
+    </script>
+</body></html>

@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>FinSight AI | Executive Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container-highest": "#353534",
+                    "critical": "#EF4444",
+                    "on-surface": "#e5e2e1",
+                    "surface": "#131313",
+                    "surface-graphite": "#1E1E1E",
+                    "background-deep": "#0A0A0A",
+                    "inverse-primary": "#005ac2",
+                    "primary-fixed-dim": "#adc6ff",
+                    "on-primary-container": "#00285d",
+                    "surface-tint": "#adc6ff",
+                    "surface-container-high": "#2a2a2a",
+                    "primary": "#adc6ff",
+                    "inverse-on-surface": "#313030",
+                    "surface-container": "#201f1f",
+                    "secondary-fixed": "#e9ddff",
+                    "error-container": "#93000a",
+                    "on-primary-fixed": "#001a42",
+                    "surface-container-lowest": "#0e0e0e",
+                    "primary-fixed": "#d8e2ff",
+                    "on-primary": "#002e6a",
+                    "outline": "#8c909f",
+                    "outline-variant": "#424754",
+                    "on-error": "#690005",
+                    "on-surface-variant": "#c2c6d6",
+                    "secondary": "#d0bcff",
+                    "tertiary": "#ffb786",
+                    "on-secondary": "#3c0091",
+                    "on-background": "#e5e2e1",
+                    "on-tertiary-container": "#461f00",
+                    "tertiary-fixed": "#ffdcc6",
+                    "text-muted": "#A1A1AA",
+                    "on-tertiary-fixed": "#311400",
+                    "secondary-container": "#571bc1",
+                    "error": "#ffb4ab",
+                    "surface-variant": "#353534",
+                    "surface-container-low": "#1c1b1b",
+                    "positive": "#10B981",
+                    "on-primary-fixed-variant": "#004395",
+                    "secondary-fixed-dim": "#d0bcff",
+                    "surface-bright": "#393939",
+                    "background": "#131313",
+                    "on-tertiary-fixed-variant": "#723600",
+                    "on-secondary-fixed": "#23005c",
+                    "warning": "#F59E0B",
+                    "surface-dim": "#131313",
+                    "on-secondary-fixed-variant": "#5516be",
+                    "on-secondary-container": "#c4abff",
+                    "tertiary-container": "#df7412",
+                    "on-error-container": "#ffdad6",
+                    "inverse-surface": "#e5e2e1",
+                    "primary-container": "#4d8eff",
+                    "tertiary-fixed-dim": "#ffb786",
+                    "on-tertiary": "#502400"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "stack-compact": "4px",
+                    "grid-margin": "24px",
+                    "gutter": "12px",
+                    "stack-default": "8px",
+                    "section-gap": "32px"
+            },
+            "fontFamily": {
+                    "label-caps": ["Inter"],
+                    "body-md": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "body-sm": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "data-mono": ["JetBrains Mono"]
+            },
+            "fontSize": {
+                    "label-caps": ["10px", {"lineHeight": "12px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "headline-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                    "body-sm": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                    "headline-md": ["18px", {"lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "data-mono": ["12px", {"lineHeight": "16px", "letterSpacing": "-0.01em", "fontWeight": "500"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { background-color: #0A0A0A; color: #e5e2e1; }
+        .glass-purple {
+            background: rgba(87, 27, 193, 0.05);
+            border-left: 2px solid #d0bcff;
+            backdrop-filter: blur(12px);
+        }
+        .data-table-row:hover { background: rgba(255, 255, 255, 0.05); }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #2A2A2A; border-radius: 10px; }
+        .radar-grid { stroke: #2A2A2A; stroke-width: 1; fill: none; }
+        .radar-area { fill: rgba(173, 198, 255, 0.1); stroke: #adc6ff; stroke-width: 2; }
+    </style>
+</head>
+<body class="font-body-md text-body-md overflow-hidden">
+<!-- SideNavBar -->
+<aside class="h-screen w-64 fixed left-0 top-0 flex flex-col border-r border-outline-variant bg-surface-container-low p-stack-default z-50">
+<div class="flex flex-col gap-1 mb-8 px-2">
+<div class="font-headline-md text-headline-md font-bold text-primary">FinSight AI</div>
+<div class="font-label-caps text-label-caps text-on-surface-variant opacity-70">Enterprise Intelligence</div>
+</div>
+<nav class="flex-1 space-y-1">
+<!-- Dashboard (Active) -->
+<a class="flex items-center gap-3 px-3 py-2 bg-secondary-container text-on-secondary-container rounded-lg transition-transform active:scale-95" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-colors duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined">description</span>
+<span class="font-body-md">Filings</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-colors duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined">search_insights</span>
+<span class="font-body-md">Filing Explorer</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-colors duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined">warning</span>
+<span class="font-body-md">Risk Analysis</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-colors duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined">psychology</span>
+<span class="font-body-md">AI Assistant</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-colors duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-body-md">Competitor Analysis</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-colors duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined">insert_chart</span>
+<span class="font-body-md">Reports</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-colors duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined">security</span>
+<span class="font-body-md">Guardrails &amp; Observability</span>
+</a>
+</nav>
+<div class="mt-auto border-t border-outline-variant pt-4 pb-2 px-2">
+<button class="w-full py-2 bg-primary text-on-primary font-bold rounded-lg mb-4 hover:opacity-90 transition-opacity">
+                Upgrade Plan
+            </button>
+<a class="flex items-center gap-3 px-2 py-2 text-on-surface-variant hover:text-on-surface transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-md">Settings</span>
+</a>
+</div>
+</aside>
+<!-- TopNavBar -->
+<header class="h-16 fixed top-0 right-0 z-40 flex items-center justify-between px-grid-margin w-[calc(100%-16rem)] ml-64 border-b border-outline-variant bg-surface/80 backdrop-blur-md">
+<div class="flex items-center gap-4 flex-1">
+<div class="relative w-96">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
+<input class="w-full bg-background-deep border border-outline-variant rounded-lg py-1.5 pl-10 pr-4 text-body-sm focus:ring-1 focus:ring-primary focus:outline-none transition-all" placeholder="Search filings, metrics, or risks..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<button class="bg-primary text-on-primary px-4 py-1.5 rounded-lg font-bold text-body-sm hover:opacity-90 transition-opacity">
+                Upload Filing
+            </button>
+<div class="flex items-center gap-4 text-on-surface-variant">
+<span class="material-symbols-outlined cursor-pointer hover:text-primary transition-colors">notifications</span>
+<div class="flex items-center gap-2 cursor-pointer group">
+<img alt="Analyst Profile" class="w-8 h-8 rounded-full border border-outline-variant" data-alt="A professional headshot of a senior financial analyst in a modern office, featuring soft studio lighting, a neutral gray background, and a sophisticated business-formal aesthetic that aligns with the premium dark-mode dashboard interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA2-YvUkzjRCN9GPB4zaj3vhqCjf_gkMXbsSSqg7I8ixutWblYy-YfdbJQt2PZ8U7GJbbGW0fx_wovWNvPyzLDrQ1rdYPklGep_9WtqQbgsUW3KpydQSZkE1Lix8i7HJOJQKM3Btuc_ZH-DaUWv_xVCFHoBWXGpItx8VnDfNijOLeHsHXPPQixqBBdZ-7_NRX7C1-U_Fzd_XBap-Rp-2cSHFqrgTVsYggVBTAPzmsd5C4Su8wPUcbtAXv87KNQ14QKwZ33PI2iVFrPJ"/>
+<span class="material-symbols-outlined group-hover:text-primary transition-colors">account_circle</span>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-64 mt-16 p-6 h-[calc(100vh-4rem)] overflow-y-auto custom-scrollbar bg-background-deep">
+<div class="max-w-[1600px] mx-auto space-y-6">
+<!-- Hero Row: Filing Overview & AI Summary -->
+<div class="grid grid-cols-12 gap-gutter">
+<!-- Filing Overview -->
+<div class="col-span-4 bg-surface-container border border-outline-variant p-4 rounded-xl flex flex-col justify-between">
+<div>
+<div class="flex justify-between items-start mb-4">
+<h2 class="font-headline-md text-headline-md text-primary">NVIDIA Corp 10-K</h2>
+<span class="px-2 py-0.5 bg-positive/10 text-positive text-label-caps border border-positive/20 rounded">Fully Processed</span>
+</div>
+<div class="space-y-3">
+<div class="flex justify-between border-b border-outline-variant/30 pb-2">
+<span class="text-on-surface-variant text-body-sm">Period</span>
+<span class="font-data-mono text-on-surface">FY2023</span>
+</div>
+<div class="flex justify-between border-b border-outline-variant/30 pb-2">
+<span class="text-on-surface-variant text-body-sm">Length</span>
+<span class="font-data-mono text-on-surface">184 Pages</span>
+</div>
+<div class="flex justify-between">
+<span class="text-on-surface-variant text-body-sm">Last Analyzed</span>
+<span class="font-data-mono text-on-surface">Oct 24, 14:02 EST</span>
+</div>
+</div>
+</div>
+<div class="mt-6 flex gap-2">
+<button class="flex-1 py-2 border border-outline-variant rounded-lg text-body-sm hover:bg-surface-container-highest transition-colors">View Source</button>
+<button class="flex-1 py-2 bg-secondary-container text-on-secondary-container rounded-lg text-body-sm font-bold">Full Report</button>
+</div>
+</div>
+<!-- AI Executive Summary (Purple Glass Card) -->
+<div class="col-span-8 glass-purple border border-white/5 p-6 rounded-xl flex flex-col">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">psychology</span>
+<h3 class="font-headline-md text-headline-md text-secondary">AI Executive Summary</h3>
+</div>
+<p class="text-headline-md text-on-surface leading-relaxed mb-6">
+                        "NVIDIA is seeing unprecedented demand for AI infrastructure, but faces significant supply chain concentration risks in Taiwan and tightening export controls."
+                    </p>
+<div class="mt-auto flex gap-6">
+<div class="flex items-center gap-2">
+<div class="w-1 h-8 bg-warning rounded-full"></div>
+<div>
+<div class="text-label-caps text-warning">PRIMARY CONCERN</div>
+<div class="text-body-sm font-bold">Supply Chain Concentration</div>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-1 h-8 bg-critical rounded-full"></div>
+<div>
+<div class="text-label-caps text-critical">MACRO RISK</div>
+<div class="text-body-sm font-bold">Export Control Regulation</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Metrics Row -->
+<div class="grid grid-cols-4 gap-gutter">
+<div class="bg-surface-container-low border border-outline-variant p-4 rounded-xl">
+<div class="text-label-caps text-on-surface-variant mb-1">REVENUE</div>
+<div class="flex items-baseline justify-between">
+<div class="font-headline-lg text-headline-lg font-data-mono">$26.97B</div>
+<div class="text-positive text-body-sm flex items-center">
+<span class="material-symbols-outlined text-xs">trending_up</span> +61%
+                        </div>
+</div>
+<div class="h-8 mt-2 overflow-hidden flex items-end gap-0.5">
+<div class="flex-1 bg-positive/20 h-1/2"></div>
+<div class="flex-1 bg-positive/30 h-2/3"></div>
+<div class="flex-1 bg-positive/20 h-1/3"></div>
+<div class="flex-1 bg-positive/40 h-3/4"></div>
+<div class="flex-1 bg-positive/50 h-5/6"></div>
+<div class="flex-1 bg-positive h-full"></div>
+</div>
+</div>
+<div class="bg-surface-container-low border border-outline-variant p-4 rounded-xl">
+<div class="text-label-caps text-on-surface-variant mb-1">OPERATING MARGIN</div>
+<div class="flex items-baseline justify-between">
+<div class="font-headline-lg text-headline-lg font-data-mono">33.8%</div>
+<div class="text-on-surface-variant text-body-sm">Stable</div>
+</div>
+<div class="h-1 w-full bg-surface-container-highest mt-4 rounded-full overflow-hidden">
+<div class="bg-primary h-full" style="width: 33.8%"></div>
+</div>
+</div>
+<div class="bg-surface-container-low border border-outline-variant p-4 rounded-xl">
+<div class="text-label-caps text-on-surface-variant mb-1">NET INCOME</div>
+<div class="flex items-baseline justify-between">
+<div class="font-headline-lg text-headline-lg font-data-mono">$4.37B</div>
+<div class="text-positive text-body-sm">+12%</div>
+</div>
+<div class="h-8 mt-2 overflow-hidden flex items-end gap-0.5">
+<div class="flex-1 bg-positive/10 h-1/4"></div>
+<div class="flex-1 bg-positive/20 h-1/2"></div>
+<div class="flex-1 bg-positive/30 h-3/4"></div>
+<div class="flex-1 bg-positive/40 h-2/3"></div>
+<div class="flex-1 bg-positive/60 h-full"></div>
+<div class="flex-1 bg-positive/40 h-3/4"></div>
+</div>
+</div>
+<div class="bg-surface-container-low border border-outline-variant p-4 rounded-xl">
+<div class="text-label-caps text-on-surface-variant mb-1">AI RISK SCORE</div>
+<div class="flex items-baseline justify-between">
+<div class="font-headline-lg text-headline-lg font-data-mono">42 <span class="text-body-sm text-on-surface-variant">TOTAL</span></div>
+<div class="text-critical text-body-sm flex items-center">High Risk</div>
+</div>
+<div class="flex gap-1 mt-4">
+<div class="h-1 flex-1 bg-critical"></div>
+<div class="h-1 flex-1 bg-critical"></div>
+<div class="h-1 flex-1 bg-warning"></div>
+<div class="h-1 flex-1 bg-surface-container-highest"></div>
+<div class="h-1 flex-1 bg-surface-container-highest"></div>
+</div>
+</div>
+</div>
+<!-- Risk Analysis Section -->
+<div class="grid grid-cols-12 gap-gutter">
+<!-- Risk Distribution Radar -->
+<div class="col-span-5 bg-surface-container border border-outline-variant p-5 rounded-xl">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-headline-md text-headline-md">Risk Distribution</h3>
+<span class="material-symbols-outlined text-on-surface-variant">open_in_full</span>
+</div>
+<div class="relative h-64 flex items-center justify-center">
+<svg class="w-full h-full" viewbox="0 0 200 200">
+<!-- Radar Web -->
+<circle class="radar-grid" cx="100" cy="100" r="80"></circle>
+<circle class="radar-grid" cx="100" cy="100" r="60"></circle>
+<circle class="radar-grid" cx="100" cy="100" r="40"></circle>
+<line class="radar-grid" x1="100" x2="100" y1="20" y2="180"></line>
+<line class="radar-grid" x1="20" x2="180" y1="100" y2="100"></line>
+<!-- Risk Area -->
+<polygon class="radar-area" points="100,40 160,80 140,150 60,150 40,80"></polygon>
+</svg>
+<div class="absolute top-0 text-label-caps text-on-surface-variant">Supply Chain</div>
+<div class="absolute right-0 text-label-caps text-on-surface-variant">Competition</div>
+<div class="absolute bottom-0 text-label-caps text-on-surface-variant">Regulatory</div>
+<div class="absolute left-0 text-label-caps text-on-surface-variant">Macro</div>
+</div>
+<div class="mt-6 grid grid-cols-3 gap-2">
+<div class="text-center p-2 rounded bg-surface-container-low border border-outline-variant/30">
+<div class="text-critical font-bold">8</div>
+<div class="text-label-caps opacity-60">High</div>
+</div>
+<div class="text-center p-2 rounded bg-surface-container-low border border-outline-variant/30">
+<div class="text-warning font-bold">15</div>
+<div class="text-label-caps opacity-60">Med</div>
+</div>
+<div class="text-center p-2 rounded bg-surface-container-low border border-outline-variant/30">
+<div class="text-on-surface-variant font-bold">19</div>
+<div class="text-label-caps opacity-60">Low</div>
+</div>
+</div>
+</div>
+<!-- Top Risk Factors List -->
+<div class="col-span-7 bg-surface-container border border-outline-variant rounded-xl overflow-hidden flex flex-col">
+<div class="p-5 border-b border-outline-variant flex justify-between items-center">
+<h3 class="font-headline-md text-headline-md">Top Risk Factors</h3>
+<button class="text-primary text-body-sm font-bold">View Matrix</button>
+</div>
+<div class="flex-1 overflow-y-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-outline-variant/30 text-label-caps text-on-surface-variant">
+<th class="px-5 py-3 font-normal">Risk Category</th>
+<th class="px-5 py-3 font-normal">Description</th>
+<th class="px-5 py-3 font-normal">Severity</th>
+<th class="px-5 py-3 font-normal text-right">Trend</th>
+</tr>
+</thead>
+<tbody class="text-body-sm">
+<tr class="data-table-row border-b border-outline-variant/10">
+<td class="px-5 py-4 font-bold text-on-surface">Supply Chain</td>
+<td class="px-5 py-4 text-on-surface-variant">Concentration in single-source manufacturing (TSMC).</td>
+<td class="px-5 py-4">
+<span class="px-2 py-0.5 bg-critical/10 text-critical text-label-caps border border-critical/20 rounded">Critical</span>
+</td>
+<td class="px-5 py-4 text-right text-critical">â</td>
+</tr>
+<tr class="data-table-row border-b border-outline-variant/10">
+<td class="px-5 py-4 font-bold text-on-surface">Regulatory</td>
+<td class="px-5 py-4 text-on-surface-variant">Tightening US-China export controls on A100/H100.</td>
+<td class="px-5 py-4">
+<span class="px-2 py-0.5 bg-critical/10 text-critical text-label-caps border border-critical/20 rounded">Critical</span>
+</td>
+<td class="px-5 py-4 text-right text-warning">â</td>
+</tr>
+<tr class="data-table-row border-b border-outline-variant/10">
+<td class="px-5 py-4 font-bold text-on-surface">Competition</td>
+<td class="px-5 py-4 text-on-surface-variant">Hyperscaler in-house silicon (TPU, Trainium).</td>
+<td class="px-5 py-4">
+<span class="px-2 py-0.5 bg-warning/10 text-warning text-label-caps border border-warning/20 rounded">High</span>
+</td>
+<td class="px-5 py-4 text-right text-positive">â</td>
+</tr>
+<tr class="data-table-row">
+<td class="px-5 py-4 font-bold text-on-surface">Intellectual Prop.</td>
+<td class="px-5 py-4 text-on-surface-variant">Potential cybersecurity breaches of architecture designs.</td>
+<td class="px-5 py-4">
+<span class="px-2 py-0.5 bg-on-surface-variant/10 text-on-surface-variant text-label-caps border border-on-surface-variant/20 rounded">Medium</span>
+</td>
+<td class="px-5 py-4 text-right text-warning">â</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<!-- Footer Section: Recent Questions & Insights -->
+<div class="grid grid-cols-12 gap-gutter pb-12">
+<div class="col-span-12 bg-surface-container border border-outline-variant p-5 rounded-xl">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-primary">chat_bubble</span>
+<h3 class="font-headline-md text-headline-md">Analyst FAQ Insights</h3>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="p-4 bg-background-deep border border-outline-variant rounded-lg group cursor-pointer hover:border-primary transition-colors">
+<div class="text-label-caps text-primary mb-2">MOST ASKED</div>
+<div class="text-body-md text-on-surface mb-2">"What is the specific exposure to TSMC?"</div>
+<div class="text-body-sm text-on-surface-variant line-clamp-1 italic">Answer: Dependence on Fab 18 in Tainan accounts for approx. 92% of high-end GPU wafer production...</div>
+</div>
+<div class="p-4 bg-background-deep border border-outline-variant rounded-lg group cursor-pointer hover:border-primary transition-colors">
+<div class="text-label-caps text-primary mb-2">COMPLIANCE QUERY</div>
+<div class="text-body-md text-on-surface mb-2">"Detail the impact of 2023 export controls."</div>
+<div class="text-body-sm text-on-surface-variant line-clamp-1 italic">Answer: Revised thresholds for total processing performance directly impact $4B in projected China revenue...</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Contextual FAB (Only for main dashboard view) -->
+<button class="fixed bottom-6 right-6 w-14 h-14 bg-secondary-container text-on-secondary-container rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform active:scale-95 group z-50">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">add</span>
+<div class="absolute right-16 px-3 py-1.5 bg-surface-container-high text-on-surface rounded border border-outline-variant opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap text-body-sm">
+            Ask AI Assistant
+        </div>
+</button>
+<script>
+        // Micro-interaction for sidebar tabs
+        document.querySelectorAll('nav a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                document.querySelectorAll('nav a').forEach(l => {
+                    l.classList.remove('bg-secondary-container', 'text-on-secondary-container');
+                    l.classList.add('text-on-surface-variant', 'hover:text-on-surface', 'hover:bg-surface-container-highest');
+                });
+                this.classList.remove('text-on-surface-variant', 'hover:text-on-surface', 'hover:bg-surface-container-highest');
+                this.classList.add('bg-secondary-container', 'text-on-secondary-container');
+            });
+        });
+
+        // Floating pulse effect for AI summary card
+        const aiCard = document.querySelector('.glass-purple');
+        if (aiCard) {
+            setInterval(() => {
+                aiCard.style.boxShadow = `0 0 ${Math.random() * 20 + 5}px rgba(208, 188, 255, 0.1)`;
+            }, 2000);
+        }
+    </script>
+</body></html>

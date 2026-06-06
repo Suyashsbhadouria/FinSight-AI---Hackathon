@@ -1,0 +1,46 @@
+/* Base overrides for tailwind classes */
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+.typing-cursor {
+    display: inline-block;
+    width: 8px;
+    height: 18px;
+    background: #adc6ff;
+    margin-left: 4px;
+    animation: blink 1s infinite;
+}
+
+@keyframes pulse-ring {
+    0% { transform: scale(0.95); opacity: 1; }
+    50% { transform: scale(1); opacity: 0.8; }
+    100% { transform: scale(0.95); opacity: 1; }
+}
+
+.animate-pulse-custom {
+    animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Radar chart svg stylings */
+.radar-grid {
+    stroke: #2A2A2A;
+    stroke-width: 1;
+    fill: none;
+}
+
+.radar-area {
+    fill: rgba(173, 198, 255, 0.1);
+    stroke: #adc6ff;
+    stroke-width: 2;
+}
+
+/* Extra animations */
+.spin-anim {
+    animation: spin 1.5s infinite linear;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}

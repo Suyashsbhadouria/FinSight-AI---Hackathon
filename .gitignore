@@ -1,0 +1,30 @@
+# Environment variables
+.env
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# IDE
+.vscode/
+.idea/
+.cursor/
+
+# Logs
+*.log
+
+# Frontend dependencies
+frontend/node_modules/
+
+# Frontend build outputs
+frontend/dist/
+frontend/build/
+frontend/.next/
+frontend/.cache/
+
+# Frontend environment files
+frontend/.env
+frontend/.env.local
+frontend/.env.production

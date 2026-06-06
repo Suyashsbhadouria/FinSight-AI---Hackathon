@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Upload Filing | FinSight AI</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-highest": "#353534",
+                        "critical": "#EF4444",
+                        "on-surface": "#e5e2e1",
+                        "surface": "#131313",
+                        "surface-graphite": "#1E1E1E",
+                        "background-deep": "#0A0A0A",
+                        "inverse-primary": "#005ac2",
+                        "primary-fixed-dim": "#adc6ff",
+                        "on-primary-container": "#00285d",
+                        "surface-tint": "#adc6ff",
+                        "surface-container-high": "#2a2a2a",
+                        "primary": "#adc6ff",
+                        "inverse-on-surface": "#313030",
+                        "surface-container": "#201f1f",
+                        "secondary-fixed": "#e9ddff",
+                        "error-container": "#93000a",
+                        "on-primary-fixed": "#001a42",
+                        "surface-container-lowest": "#0e0e0e",
+                        "primary-fixed": "#d8e2ff",
+                        "on-primary": "#002e6a",
+                        "outline": "#8c909f",
+                        "outline-variant": "#424754",
+                        "on-error": "#690005",
+                        "on-surface-variant": "#c2c6d6",
+                        "secondary": "#d0bcff",
+                        "tertiary": "#ffb786",
+                        "on-secondary": "#3c0091",
+                        "on-background": "#e5e2e1",
+                        "on-tertiary-container": "#461f00",
+                        "tertiary-fixed": "#ffdcc6",
+                        "text-muted": "#A1A1AA",
+                        "on-tertiary-fixed": "#311400",
+                        "secondary-container": "#571bc1",
+                        "error": "#ffb4ab",
+                        "surface-variant": "#353534",
+                        "surface-container-low": "#1c1b1b",
+                        "positive": "#10B981",
+                        "on-primary-fixed-variant": "#004395",
+                        "secondary-fixed-dim": "#d0bcff",
+                        "surface-bright": "#393939",
+                        "background": "#131313",
+                        "on-tertiary-fixed-variant": "#723600",
+                        "on-secondary-fixed": "#23005c",
+                        "warning": "#F59E0B",
+                        "surface-dim": "#131313",
+                        "on-secondary-fixed-variant": "#5516be",
+                        "on-secondary-container": "#c4abff",
+                        "tertiary-container": "#df7412",
+                        "on-error-container": "#ffdad6",
+                        "inverse-surface": "#e5e2e1",
+                        "primary-container": "#4d8eff",
+                        "tertiary-fixed-dim": "#ffb786",
+                        "on-tertiary": "#502400"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "stack-compact": "4px",
+                        "grid-margin": "24px",
+                        "gutter": "12px",
+                        "stack-default": "8px",
+                        "section-gap": "32px"
+                    },
+                    "fontFamily": {
+                        "label-caps": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "data-mono": ["JetBrains Mono"]
+                    },
+                    "fontSize": {
+                        "label-caps": ["10px", {"lineHeight": "12px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "headline-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "body-sm": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                        "headline-md": ["18px", {"lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "data-mono": ["12px", {"lineHeight": "16px", "letterSpacing": "-0.01em", "fontWeight": "500"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .ai-purple-border {
+            border-left: 2px solid #571bc1;
+            box-shadow: -4px 0 15px -5px rgba(87, 27, 193, 0.5);
+        }
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); opacity: 1; }
+            50% { transform: scale(1); opacity: 0.8; }
+            100% { transform: scale(0.95); opacity: 1; }
+        }
+        .animate-pulse-custom {
+            animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        .step-active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: #adc6ff;
+        }
+    </style>
+</head>
+<body class="bg-background-deep text-on-surface font-body-md selection:bg-primary-container selection:text-on-primary-container">
+<!-- SideNavBar Component -->
+<nav class="h-screen w-64 fixed left-0 top-0 flex flex-col border-r border-outline-variant bg-surface-container-low p-stack-default z-50">
+<div class="flex flex-col h-full">
+<div class="flex items-center gap-3 px-4 py-6">
+<div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary text-[20px]" data-weight="fill">psychology</span>
+</div>
+<div>
+<h1 class="font-headline-md text-headline-md font-bold text-primary">FinSight AI</h1>
+<p class="font-label-caps text-label-caps text-on-surface-variant">Enterprise Intelligence</p>
+</div>
+</div>
+<div class="flex-1 space-y-1 mt-4">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-highest transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-secondary-container text-on-secondary-container rounded-lg transition-transform active:scale-95" href="#">
+<span class="material-symbols-outlined">description</span>
+<span class="font-body-md">Filings</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-highest transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">search_insights</span>
+<span class="font-body-md">Filing Explorer</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-highest transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">warning</span>
+<span class="font-body-md">Risk Analysis</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-highest transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">psychology</span>
+<span class="font-body-md">AI Assistant</span>
+</a>
+</div>
+<div class="p-4 bg-surface-container rounded-xl mt-auto">
+<p class="font-label-caps text-label-caps text-on-surface-variant mb-2">CURRENT PLAN</p>
+<p class="font-body-md font-bold mb-3">Enterprise Pro</p>
+<button class="w-full py-2 bg-primary text-on-primary rounded font-label-caps text-label-caps hover:opacity-90 transition-opacity">Upgrade Plan</button>
+</div>
+</div>
+</nav>
+<!-- TopNavBar Component -->
+<header class="h-16 fixed top-0 right-0 z-40 border-b border-outline-variant bg-surface/80 backdrop-blur-md flex items-center justify-between px-grid-margin w-[calc(100%-16rem)] ml-64">
+<div class="flex items-center bg-surface-container-lowest px-4 py-1.5 rounded-full border border-outline-variant w-96">
+<span class="material-symbols-outlined text-on-surface-variant text-[18px]">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-body-sm w-full placeholder:text-on-surface-variant" placeholder="Search filings, ticker or risk factors..." type="text"/>
+</div>
+<div class="flex items-center gap-6">
+<button class="flex items-center gap-2 bg-primary/10 text-primary border border-primary/20 px-4 py-1.5 rounded-full hover:bg-primary/20 transition-colors">
+<span class="material-symbols-outlined text-[20px]">upload_file</span>
+<span class="font-label-caps text-label-caps">Upload Filing</span>
+</button>
+<div class="flex items-center gap-3">
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant">
+<img alt="Analyst Profile" class="w-full h-full object-cover" data-alt="A professional headshot of a financial analyst in a modern office environment, lit by cold blue and white ambient lighting that matches a dark-mode enterprise UI. The analyst is wearing a charcoal suit and has a neutral, confident expression. The background is softly blurred, showing hints of high-tech data screens and glass architecture." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7po75AS_PlfcaVpAu7ScLEiOM-Ntqun8lKnQoh3rG0aijPMSVc04Lkzxmyt1SPqlcJJ9Way9CaSG8MfleJshOvbE2D_AoJJQSKvU8Vwcu8PG6HoJEMGoFesHHBfHDuGcYvWi_s1Hpd5CEh7Z4ghw0sYklA3dCF2ivVcpvoLURRFUFAvp5ywjm3Y73tMLxwkxRZxSL1FkPFNn2PD5HNi0OvkrFm127Kla7MJYQ9GFOSGGNkLcdHq2NZqGROi8m42dPTYq9VV6ocfPI"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="ml-64 pt-24 pb-12 px-grid-margin flex flex-col items-center">
+<div class="w-full max-w-4xl">
+<!-- Header Section -->
+<div class="mb-section-gap">
+<h2 class="font-headline-lg text-headline-lg mb-2">Filing Upload &amp; Processing</h2>
+<p class="text-on-surface-variant font-body-md">Ingest SEC filings for deep risk analysis and AI-powered extraction.</p>
+</div>
+<!-- Upload Zone -->
+<div class="group relative mb-gutter">
+<div class="border-2 border-dashed border-outline-variant bg-surface-container-low hover:border-primary/50 hover:bg-surface-container transition-all duration-300 rounded-xl p-12 flex flex-col items-center justify-center cursor-pointer min-h-[320px]">
+<div class="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-[40px] text-primary" data-weight="fill">cloud_upload</span>
+</div>
+<p class="font-headline-md text-headline-md mb-2">Drag and drop filings here</p>
+<p class="text-on-surface-variant font-body-md mb-6">Supports PDF, XBRL, and HTML (Max 50MB per file)</p>
+<button class="px-8 py-2.5 bg-surface-container-highest border border-outline-variant text-on-surface rounded-lg font-body-md hover:bg-surface-bright transition-colors">
+                        Browse Files
+                    </button>
+</div>
+</div>
+<!-- Active Processing State -->
+<div class="glass-panel rounded-xl p-6 mb-gutter overflow-hidden relative">
+<div class="flex items-center justify-between mb-8">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center animate-pulse-custom">
+<span class="material-symbols-outlined text-primary">description</span>
+</div>
+<div>
+<p class="font-data-mono text-data-mono text-primary">FILE ID: NVIDIA_2023_10K.pdf</p>
+<p class="font-headline-md text-headline-md">Processing Annual Report</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-data-mono text-headline-md text-primary">65%</p>
+<p class="font-label-caps text-label-caps text-on-surface-variant">ESTIMATED: 14s LEFT</p>
+</div>
+</div>
+<!-- Linear Stepper -->
+<div class="relative w-full mb-8">
+<div class="flex items-center justify-between relative z-10">
+<!-- Step 1: Done -->
+<div class="flex flex-col items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-positive flex items-center justify-center border-4 border-background-deep shadow-lg">
+<span class="material-symbols-outlined text-[16px] text-background-deep font-bold">check</span>
+</div>
+<span class="font-label-caps text-label-caps text-positive">Upload</span>
+</div>
+<!-- Step 2: Done -->
+<div class="flex flex-col items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-positive flex items-center justify-center border-4 border-background-deep shadow-lg">
+<span class="material-symbols-outlined text-[16px] text-background-deep font-bold">check</span>
+</div>
+<span class="font-label-caps text-label-caps text-positive">Parse</span>
+</div>
+<!-- Step 3: Done -->
+<div class="flex flex-col items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-positive flex items-center justify-center border-4 border-background-deep shadow-lg">
+<span class="material-symbols-outlined text-[16px] text-background-deep font-bold">check</span>
+</div>
+<span class="font-label-caps text-label-caps text-positive">Extraction</span>
+</div>
+<!-- Step 4: Active -->
+<div class="flex flex-col items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center border-4 border-background-deep shadow-lg ring-4 ring-primary/20 animate-pulse">
+<span class="material-symbols-outlined text-[16px] text-on-primary">psychology</span>
+</div>
+<span class="font-label-caps text-label-caps text-primary">Risk Analysis</span>
+</div>
+<!-- Step 5: Waiting -->
+<div class="flex flex-col items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-surface-container-highest flex items-center justify-center border-4 border-background-deep">
+<div class="w-2 h-2 rounded-full bg-on-surface-variant"></div>
+</div>
+<span class="font-label-caps text-label-caps text-on-surface-variant">Finalizing</span>
+</div>
+</div>
+<!-- Connector Lines -->
+<div class="absolute top-4 left-0 w-full h-[2px] bg-surface-container-highest -z-0">
+<div class="h-full bg-primary" style="width: 75%"></div>
+</div>
+</div>
+<!-- Status Console -->
+<div class="bg-background-deep/50 rounded-lg p-4 ai-purple-border">
+<div class="flex items-center gap-3 mb-2">
+<div class="w-2 h-2 rounded-full bg-tertiary-container animate-pulse"></div>
+<p class="font-data-mono text-data-mono text-on-surface">Generating Embeddings for Item 1A...</p>
+</div>
+<div class="space-y-1 pl-5">
+<p class="font-data-mono text-body-sm text-on-surface-variant opacity-60">&gt; Identified 24 distinct risk vectors</p>
+<p class="font-data-mono text-body-sm text-on-surface-variant opacity-40">&gt; Cross-referencing with Q3 industrial sentiment</p>
+</div>
+</div>
+</div>
+<!-- Bento Info Cards -->
+<div class="grid grid-cols-2 gap-gutter">
+<div class="bg-surface-container-low border border-outline-variant rounded-xl p-5 hover:bg-surface-container transition-colors">
+<div class="flex items-center gap-3 mb-3">
+<span class="material-symbols-outlined text-secondary">security</span>
+<h3 class="font-body-md font-bold">Data Privacy</h3>
+</div>
+<p class="text-body-sm text-on-surface-variant">All uploaded filings are encrypted in transit and at rest. Documents are siloed per organization and never used for global model retraining.</p>
+</div>
+<div class="bg-surface-container-low border border-outline-variant rounded-xl p-5 hover:bg-surface-container transition-colors">
+<div class="flex items-center gap-3 mb-3">
+<span class="material-symbols-outlined text-tertiary">bolt</span>
+<h3 class="font-body-md font-bold">Auto-Extraction</h3>
+</div>
+<p class="text-body-sm text-on-surface-variant">Our engine automatically isolates MD&amp;A, Risk Factors, and Legal Proceedings to provide immediate comparative analysis.</p>
+</div>
+</div>
+</div>
+</main>
+<script>
+        // Micro-interactions for progress simulation
+        let progress = 65;
+        const progressEl = document.querySelector('.font-data-mono.text-headline-md.text-primary');
+        const barEl = document.querySelector('.absolute.top-4 .bg-primary');
+        const statusText = document.querySelector('.font-data-mono.text-on-surface');
+        
+        const logs = [
+            "Generating Embeddings for Item 1A...",
+            "Analyzing Macro-economic headwinds...",
+            "Extracting Supply Chain dependencies...",
+            "Correlating legal dispute timelines...",
+            "Finalizing Risk Score compilation..."
+        ];
+
+        setInterval(() => {
+            if(progress < 99) {
+                progress += Math.random() * 0.5;
+                progressEl.textContent = `${Math.floor(progress)}%`;
+                barEl.style.width = `${progress}%`;
+                
+                if(Math.random() > 0.95) {
+                    const randomLog = logs[Math.floor(Math.random() * logs.length)];
+                    statusText.textContent = randomLog;
+                }
+            }
+        }, 1000);
+    </script>
+</body></html>
